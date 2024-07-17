@@ -34,6 +34,7 @@ const props = defineProps({
     reset: Boolean,
     density: String,
     timeout: Number,
+    paused: Boolean,
     size: {
         type: Number,
         default: 1,
@@ -59,7 +60,9 @@ async function updateUI() {
         // For this demo we increase
         // the value of our ticker
         // each second
-        tick.value--
+        if (!props.paused) {
+            tick.value--
+        }
         emit('update:modelValue', tick.value)
     }, 1000)
 }

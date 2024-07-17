@@ -1,13 +1,13 @@
 <template>
     <v-container fluid>
         <v-list>
-            <v-list-item v-for="link in links" :key="link.href" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)">
+            <v-list-item v-for="(link, i) in links" :key="i" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
                     <component v-if="link.icon" class="mr-2" :is="link.icon" />
                     <img v-else :src="link.svg" class="mr-2" width="24" height="24" />
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :timeout="link.rules.redirect.timeout" v-if="link.rules?.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i]" :timeout="link.rules.redirect.timeout" v-if="link.rules?.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                 </template>
             </v-list-item>
         </v-list>
@@ -30,7 +30,7 @@ const rules = {
         timeout: 3
     }
 }
-const links = computed(() => parseSocialLinks([
+const rawLinks = [
     {
         "href": "https://beacons.ai/astarbabyxo",
         "title": "Beacons.ai",
@@ -96,7 +96,9 @@ const links = computed(() => parseSocialLinks([
         "title": "Facebook",
         "subtitle": "I don’t msg on here, I only post💙✨"
     }
-]))
+]
+const hovered = ref(rawLinks.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}))
+const links = computed(() => parseSocialLinks(rawLinks))
 console.log(links)
 function linkClickHandler(link) {
     // Google Analytics 4 event tracking
