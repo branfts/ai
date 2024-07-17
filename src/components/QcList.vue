@@ -6,19 +6,35 @@
                     <component v-if="link.icon" class="mr-2" :is="link.icon" />
                     <img v-else :src="link.svg" class="mr-2" width="24" height="24" />
                 </template>
+                <template v-slot:append>
+                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :timeout="link.rules.redirect.timeout" v-if="link.rules?.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                </template>
             </v-list-item>
         </v-list>
     </v-container>
 </template>
 <style scoped></style>
 <script setup>
-import { ref, computed, inject } from 'vue'
+import 'animate.css'
+import { ref, computed, inject, onMounted, watch } from 'vue'
+import { useAppStore } from '@/store/app'
 
+import FlipBoard from '@/components/FlipBoard.vue'
+
+const flip = ref()
+const timer = ref()
+const store = useAppStore()
 const parseSocialLinks = inject('parseSocialLinks')
+const rules = {
+    redirect: {
+        timeout: 3
+    }
+}
 const links = computed(() => parseSocialLinks([
     {
         "href": "https://beacons.ai/astarbabyxo",
         "title": "Beacons.ai",
+        rules
     },
     {
         "href": "https://onlyfans.com/astarbabyxo",
@@ -82,11 +98,23 @@ const links = computed(() => parseSocialLinks([
     }
 ]))
 console.log(links)
-function linkClickHandler (link) {
+function linkClickHandler(link) {
     // Google Analytics 4 event tracking
-    gtag('event', 'click', {
-        event_category: 'link',
+    const details = {
+        owner: 'astarbabyxo',
         ...link
-    })
+    }
+    console.log(details)
+    gtag('event', 'link_click', details)
 }
+onMounted(() => {
+    watch(timer, timer => {
+        if (timer !== undefined && timer < 0) {
+            const href = links.value.find(link => link.rules)?.href
+            if (!href) return
+
+            window.location.href = href
+        }
+    })
+})
 </script>
