@@ -1,0 +1,37 @@
+{
+  "name": "qc-web",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "VITE_CJS_TRACE=true vite --host 0.0.0.0",
+    "build": "cross-env NODE_ENV=production && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tryghost/content-api": "^1.11.21",
+    "animate.css": "^4.1.1",
+    "async": "^3.2.5",
+    "axios": "^1.7.2",
+    "keycloak-js": "^25.0.1",
+    "lru-cache": "^11.0.0",
+    "marked": "^13.0.2",
+    "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
+    "vite": "^5.3.4",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vue": "^3.4.32",
+    "vue-router": "^4.4.0",
+    "vue-social-sharing": "^4.0.0-alpha4",
+    "vue3-simple-icons": "^12.0.0",
+    "vuetify": "^3.6.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.7.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.77.8",
+    "terser": "^5.31.3",
+    "vite-plugin-compression": "^0.5.1",
+    "vue-eslint-parser": "^9.4.3"
+  }
+}

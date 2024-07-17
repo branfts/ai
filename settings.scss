@@ -1,0 +1,8 @@
+@use 'vuetify' with (
+	$body-font-family: 'Open Sans',
+    $font-size-root: 1.125rem,
+);
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75,300;0,75,400;0,75,500;0,75,600;0,75,700;0,75,800;0,100,300;0,100,400;0,100,500;0,100,600;0,100,700;0,100,800;1,100,300;1,100,400;1,100,500;1,100,600;1,100,700;1,100,800&display=block');
+html {
+    font-stretch: ultra-condensed !important;
+}
