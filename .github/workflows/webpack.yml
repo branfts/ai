@@ -50,7 +50,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
-          path: dist
+          path: github-pages
 
       - name: Deploy to GitHub Pages
         id: deployment
