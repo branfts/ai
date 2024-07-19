@@ -1,10 +1,6 @@
 name: Merge Pull Requests
 
-on:
-  workflow_dispatch:
-    inputs:
-      pr_number:
-      
+on:      
   pull_request:
     types: [approved]
 
@@ -20,14 +16,6 @@ jobs:
         run: |
           # Extract PR number from GITHUB_REF_NAME
           PR_NUMBER=$(echo $GITHUB_REF_NAME | cut -d'/' -f1)
-          
-          # Check if PR_NUMBER is a valid number
-          if [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
-            echo "Extracted PR_NUMBER is valid: $PR_NUMBER"
-          else
-            echo "Extracted PR_NUMBER is not valid, using input PR number."
-            PR_NUMBER=${{ github.event.inputs.pr_number }}
-          fi
       
           # Set PR_NUMBER to environment variable
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
