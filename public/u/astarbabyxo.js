@@ -68,6 +68,15 @@ const rules = [{
     priority: 0,
     name: 'redirect',
     href: 'https://beacons.ai/astarbabyxo',
-    timeout: 10
+    timeout: 10,
+    startTime: '00:00:00' // '2022-06-07T00:00:00.000Z',
+    // endTime: '00:00:00',
+},{
+    priority: 0,
+    name: 'redirect',
+    href: 'https://onlyfans.com/astarbabyxo',
+    timeout: 10,
+    startTime: '22:00:00', // '2022-06-07T00:00:00.000Z',
+    endTime: '02:00:00'
 }]
 export { links, rules }
