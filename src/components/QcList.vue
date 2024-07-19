@@ -22,9 +22,11 @@
                     <v-icon icon="close" size="x-small" @click="dialog = false"></v-icon>
                 </v-card-title>
                 <v-divider />
-                <v-card-text class="d-flex flex-column">
-                    <v-img :src="qrcode" width="300"></v-img>
-                    <v-img src="/ai.logo.svg" width="30" style="position: absolute; margin: 40px 0 0 40px; background: white"></v-img>
+                <v-card-text>
+                    <div class="d-flex align-center justify-center" style="width: 300px">
+                        <v-img :src="qrcode" width="300"></v-img>
+                        <v-img src="/ai.logo.svg" width="35" class="qr-logo"></v-img>
+                    </div>
                 </v-card-text>
                 <v-divider />
                 <v-card-actions>
@@ -65,7 +67,14 @@
         </v-dialog>
     </v-container>
 </template>
-<style scoped></style>
+<style scoped>
+.qr-logo {
+    position: absolute;
+    border-radius: 25%;
+    background: white;
+    opacity: 0.95;
+}
+</style>
 <script setup>
 import 'animate.css'
 import QRCode from 'qrcode'
