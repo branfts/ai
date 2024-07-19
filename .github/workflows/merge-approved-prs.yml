@@ -2,6 +2,9 @@ name: Merge Pull Requests
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+      
   pull_request:
     types: [approved]
 
@@ -24,7 +27,7 @@ jobs:
             console.log(process.env)
             console.log('.............', ${{ github.event.number }})
             
-            const pull_number = process.env.PR_NUMBER;
+            const pull_number = process.env.PR_NUMBER || ${{ github.event.inputs.pr_number }};
             if (!pull_number) {
               throw new Error('Pull request number is not available');
             }
