@@ -1,11 +1,12 @@
 name: Merge Pull Requests
 
 on:      
-  pull_request:
-    types: [approved]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   merge-pr:
+    if: github.event.review.state == 'APPROVED'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
