@@ -1,5 +1,5 @@
 <template>
-    home
+    <QCMain />
 </template>
 <script setup>
 import QCMain from '../components/QCMain.vue'

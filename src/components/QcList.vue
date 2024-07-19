@@ -1,121 +1,155 @@
 <template>
-    <v-container fluid>
+    <v-container fluid :class="smAndDown ? 'pa-0' : ''">
+        <div class="d-flex align-center justify-center">
+            <div class="text-h6 text-center">{{ user?.username }}</div>
+            <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
+        </div>
         <v-list>
-            <v-list-item v-for="(link, i) in links" :key="i" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
+            <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
                     <component v-if="link.icon" class="mr-2" :is="link.icon" />
                     <img v-else :src="link.svg" class="mr-2" width="24" height="24" />
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i]" :timeout="link.rules.redirect.timeout" v-if="link.rules?.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i]" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                 </template>
             </v-list-item>
         </v-list>
+        <v-dialog v-model="dialog" class="d-flex justify-center align-center" @close="dialog = false" width="700">
+            <v-card rounded="xl" class="my-1 pb-3">
+                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">QR Code
+                    <v-spacer />
+                    <v-icon icon="close" size="x-small" @click="dialog = false"></v-icon>
+                </v-card-title>
+                <v-divider />
+                <v-card-text class="d-flex flex-column">
+                    <v-img :src="qrcode"></v-img>
+                </v-card-text>
+                <v-divider />
+                <v-card-actions>
+                    <v-btn variant="outlined" rounded size="small" @click="downloadHandler">download image</v-btn>
+                    <v-btn variant="tonal" rounded size="small" class="mr-4" @click="copyHandler('qrcode')">copy to clipboard
+                        <v-tooltip v-model="tooltips['qrcode']" class="justify-center align-center" attach location="top">
+                            <span class="text-caption font-weight-bold">Copied</span>
+                        </v-tooltip>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+            <v-card rounded="xl" class="my-1 pb-3">
+                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Binary</v-card-title>
+                <v-card-subtitle>
+                    {{ binary }}
+                </v-card-subtitle>
+                <v-card-actions>
+                    <v-btn variant="tonal" rounded size="small" @click="copyHandler('binary')" class="mr-4">copy to clipboard
+                        <v-tooltip v-model="tooltips['binary']" class="justify-center align-center" attach location="top">
+                            <span class="text-caption font-weight-bold">Copied</span>
+                        </v-tooltip>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+            <v-card rounded="xl" class="my-1 pb-3">
+                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Link</v-card-title>
+                <v-card-subtitle>
+                    {{ qcLink }}
+                </v-card-subtitle>
+                <v-card-actions>
+                    <v-btn variant="tonal" rounded size="small" @click="copyHandler('link')" class="mr-4">copy to clipboard
+                        <v-tooltip v-model="tooltips['link']" class="justify-center align-center" attach location="top">
+                            <span class="text-caption font-weight-bold">Copied</span>
+                        </v-tooltip>
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 <style scoped></style>
 <script setup>
 import 'animate.css'
+import QRCode from 'qrcode'
 import { ref, computed, inject, onMounted, watch } from 'vue'
-import { useAppStore } from '@/store/app'
+import { useDisplay } from 'vuetify/lib/framework.mjs'
 
 import FlipBoard from '@/components/FlipBoard.vue'
 
+const clipboard = inject('clipboard')
+const binary = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(2)).join(' '))
+const dialog = ref(false)
+const { smAndDown } = useDisplay()
+const props = defineProps({
+    user: Object
+})
+const tooltips = ref({
+    binary: false,
+    qrcode: false,
+    link: false
+})
+const links = computed(() => props.user?.links)
+const qcLink = computed(() => `${window.location.origin}/u/${props.user.username}`)
 const flip = ref()
 const timer = ref()
-const store = useAppStore()
 const parseSocialLinks = inject('parseSocialLinks')
-const rules = {
-    redirect: {
-        timeout: 3
+
+const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
+const socialLinks = computed(() => parseSocialLinks(links.value))
+const qrcode = ref()
+
+console.log(socialLinks.value)
+function copyDataUrlToClipboard(dataUrl) {
+    const byteString = atob(dataUrl.split(',')[1])
+    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0]
+    const ab = new ArrayBuffer(byteString.length)
+    const ia = new Uint8Array(ab)
+
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
     }
+
+    clipboard.copy(new Blob([ab], { type: mimeString }))
 }
-const rawLinks = [
-    {
-        "href": "https://beacons.ai/astarbabyxo",
-        "title": "Beacons.ai",
-        rules
-    },
-    {
-        "href": "https://onlyfans.com/astarbabyxo",
-        "title": "Exclusive Content 😘",
-        "subtitle": "Only place I reply to DMS☺️🫶🏻"
-    },
-    {
-        "href": "https://www.instagram.com/astarxobaby?igsh=MTJ1c3pwNHo0M3V4ag%3D%3D&utm_source=qr",
-        "title": "New Insta✨",
-        "subtitle": "I post here daily🥰"
-    },
-    {
-        "href": "https://instagram.com/astarbabyxox?igshid=ZWIzMWE5ZmU3Zg==",
-        "title": "Instagram ",
-        "subtitle": "My main account ☺️"
-    },
-    {
-        "href": "https://www.instagram.com/astarbabyxo/",
-        "title": "Backup Instagram",
-        "subtitle": ""
-    },
-    {
-        "href": "https://instagram.com/astarbabyxx?igshid=NTc4MTIwNjQ2YQ==",
-        "title": "Reels +vids Insta ",
-        "subtitle": "AstarbabyXxtra"
-    },
-    {
-        "href": "https://throne.com/astarbabyxo",
-        "title": "Wishlist!✨",
-        "subtitle": "Spoil me🥺❤️"
-    },
-    {
-        "href": "https://www.tiktok.com/@xastarbabyx?_t=8lAY0KRkaa9&_r=1",
-        "title": "Main Tik Tok",
-        "subtitle": ""
-    },
-    {
-        "href": "https://www.tiktok.com/@aastarbabyxo?_t=8lAY5nrBf9g&_r=1",
-        "title": "2nd Tik Tok",
-        "subtitle": ""
-    },
-    {
-        "href": "https://www.tiktok.com/@itsastarbaby?_t=8jQxhyYTvfz&_r=1",
-        "title": "Vlog Tik Tok",
-        "subtitle": ""
-    },
-    {
-        "href": "https://www.threads.net/@astarbabyxo",
-        "title": "Threads ",
-        "subtitle": "My thoughts 💭 "
-    },
-    {
-        "href": "https://www.facebook.com/profile.php?id=100063889657411&mibextid=LQQJ4d",
-        "title": "ONLY Facebook",
-        "subtitle": "I don’t msg on here, I only post💙✨"
-    },
-    {
-        "href": "https://www.facebook.com/profile.php?id=100063889657411&mibextid=LQQJ4d",
-        "title": "Facebook",
-        "subtitle": "I don’t msg on here, I only post💙✨"
+
+function copyHandler(name) {
+    tooltips.value[name] = true
+    if (name === 'qrcode') {
+        copyDataUrlToClipboard(qrcode.value)
+    } else if (name === 'binary') {
+        clipboard.copy(binary.value)
+    } else if (name === 'link') {
+        clipboard.copy(qcLink.value)
     }
-]
-const hovered = ref(rawLinks.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}))
-const links = computed(() => parseSocialLinks(rawLinks))
-console.log(links)
+    setTimeout(() => tooltips.value[name] = false, 1500)
+}
+
 function linkClickHandler(link) {
     // Google Analytics 4 event tracking
     const details = {
-        owner: 'astarbabyxo',
+        owner: user.value.username,
         ...link
     }
     console.log(details)
     gtag('event', 'link_click', details)
 }
+async function asyncInit() {
+    qrcode.value = await QRCode.toDataURL(qcLink.value)
+}
+function downloadHandler() {
+    const link = document.createElement('a')
+    link.href = qcLink.value
+    link.download = `${window.location.origin}-${props.user.username}.png`
+    link.click()
+}
+
+asyncInit()
 onMounted(() => {
+    watch(dialog, dialog => {
+        if (!qrcode.value) {
+            asyncInit()
+        }
+    })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {
-            const href = links.value.find(link => link.rules)?.href
-            if (!href) return
-
-            window.location.href = href
+            window.location.href = props.user.rules.find(rule => rule.name === 'redirect').href
         }
     })
 })

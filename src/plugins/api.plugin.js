@@ -72,7 +72,7 @@ const apiService = () => {
             }
         },
         releaseInfo: async function fetchLatestRelease() {
-            const owner = 'june07'
+            const owner = 'branfts'
             const repo = 'qc'
             const url = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
 
@@ -93,7 +93,6 @@ const apiService = () => {
                 document.getElementById('release-info').textContent = `Error: ${error.message}`
             }
         }
-
     }
 }
 

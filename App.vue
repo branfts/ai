@@ -1,15 +1,19 @@
 <template>
     <v-app>
-        <v-app-bar flat location="bottom" :collapse="collapse" style="opacity: 0.95;">
+        <v-app-bar flat location="bottom" :collapse="collapse" style="opacity: 0.95;" :density="smAndDown ? 'compact' : undefined" class="d-flex align-center">
             <template v-slot:prepend>
                 <v-app-bar-nav-icon @click="collapse = !collapse"></v-app-bar-nav-icon>
             </template>
 
             <v-app-bar-title class="font-weight-light"></v-app-bar-title>
-            <v-btn v-show="!collapse" v-for="link of links.general" :to="link.to" :href="link.href" variant="text" :target="link.target" :rel="link.rel" class="text-capitalize">{{ link.name }}</v-btn>
+            <v-btn v-show="!collapse" v-for="link of links.general" :to="link.to" :href="link.href" variant="text" :target="link.target" :rel="link.rel" class="text-capitalize" :size="smAndDown ? 'small' : undefined" :class="smAndDown ? 'px-0' : ''" :text="smAndDown && /github/i.test(link.name) ? undefined : link.name" :icon="smAndDown && /github/i.test(link.name) ? true : undefined">
+                <component v-if="link.icon" class="mr-2" :is="link.icon" />
+                <span v-else v-html="link.name"></span>
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" size="small" class="pa-0 text-caption">{{ link.name }}</v-btn>
-            <div v-show="!collapse" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>
+            <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 text-caption" :text="link.name" />
+            <div v-show="!collapse && !smAndDown" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>
+            <v-spacer v-if="smAndDown"></v-spacer>
         </v-app-bar>
         <v-navigation-drawer v-if="!smAndDown" order="2" width="200" floating location="left">
             <div class="h-100 d-flex align-center">
@@ -46,6 +50,7 @@
 </template>
 <style scoped></style>
 <script setup>
+import { GitHubIcon } from 'vue3-simple-icons'
 import { ref, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 
@@ -59,7 +64,7 @@ const snackbarDefault = {
     icon: 'info',
     message: undefined,
 }
-const collapse = ref(false)
+const collapse = ref(smAndDown.value ? true : false)
 const snackbar = ref({ ...snackbarDefault })
 const lastBuild = ref()
 const versionCheckIntervalId = ref()
@@ -68,8 +73,7 @@ const links = {
     general: [
         { name: "Home", to: "/" },
         { name: "FAQ", to: "/faq" },
-        { name: "Blog", href: "https://blog.june07.com" },
-        { name: "GitHub", href: "https://github.com/june07", target: "_blank", rel: "noopener" },
+        { name: "GitHub", href: "https://github.com/branfts/qc", target: "_blank", rel: "noopener", icon: GitHubIcon },
     ],
     legal: [
         { name: "Privacy", href: "https://privacy.june07.com" },

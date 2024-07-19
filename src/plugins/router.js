@@ -11,9 +11,15 @@ export default (app) => {
                 name: 'faq',
                 meta: {
                     title: 'Frequently Asked Questions',
-                    menu: 'FAQ'
                 },
                 component: () => import('@/views/FAQ.vue')
+            }, {
+                path: '/u/:username?',
+                name: 'myindex',
+                meta: {
+                    title: 'My Index',
+                },
+                component: () => import('@/views/User.vue')
             }, {
                 path: '/:catchAll(.*)',
                 name: 'catchall',
