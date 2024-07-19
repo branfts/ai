@@ -15,7 +15,7 @@
                 </template>
             </v-list-item>
         </v-list>
-        <v-dialog v-model="dialog" class="d-flex justify-center align-center" @close="dialog = false" width="700">
+        <v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%">
             <v-card rounded="xl" class="my-1 pb-3">
                 <v-card-title class="d-flex align-center text-body-1 font-weight-bold">QR Code
                     <v-spacer />
@@ -23,8 +23,8 @@
                 </v-card-title>
                 <v-divider />
                 <v-card-text>
-                    <div class="d-flex align-center justify-center" style="width: 300px">
-                        <v-img :src="qrcode" width="300"></v-img>
+                    <div class="d-flex align-center justify-center" style="width: 250px">
+                        <v-img :src="qrcode"></v-img>
                         <v-img src="/ai.logo.svg" width="35" class="qr-logo"></v-img>
                     </div>
                 </v-card-text>
@@ -105,7 +105,7 @@ const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }
 const socialLinks = computed(() => parseSocialLinks(links.value))
 const qrcode = ref()
 
-console.log(socialLinks.value)
+// console.log(socialLinks.value)
 function copyDataUrlToClipboard(dataUrl) {
     const byteString = atob(dataUrl.split(',')[1])
     const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0]
@@ -129,6 +129,7 @@ function copyHandler(name) {
         clipboard.copy(qcLink.value)
     }
     setTimeout(() => tooltips.value[name] = false, 1500)
+    gtag('event', 'link_copy', { method: name })
 }
 
 function linkClickHandler(link) {
@@ -148,14 +149,17 @@ function downloadHandler() {
     link.href = qcLink.value
     link.download = `${window.location.origin}-${props.user.username}.png`
     link.click()
+    gtag('event', 'link_download')
 }
 
 asyncInit()
 onMounted(() => {
-    watch(dialog, () => {
+    watch(dialog, dialog => {
+        if (!dialog) return
         if (!qrcode.value) {
             asyncInit()
         }
+        gtag('event', 'qc_dialog')
     })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {

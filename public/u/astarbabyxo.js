@@ -68,6 +68,6 @@ const rules = [{
     priority: 0,
     name: 'redirect',
     href: 'https://beacons.ai/astarbabyxo',
-    timeout: 600
+    timeout: 10
 }]
 export { links, rules }
