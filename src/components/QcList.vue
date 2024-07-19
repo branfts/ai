@@ -163,7 +163,7 @@ onMounted(() => {
     })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {
-            window.location.href = props.user.rules.find(rule => rule.name === 'redirect').href
+            window.location.href = links.value.find(link => link.redirect).href
         }
     })
 })

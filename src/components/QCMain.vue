@@ -36,17 +36,32 @@ async function asyncInit() {
     try {
         const userConfig = username && await import(/* @vite-ignore */`/u/${route.params.username}.js`)
         const { links, rules } = userConfig
-        const sortedRedirectRules = rules.filter(rule => rule.name === 'redirect' && isRuleActive(rule))
-            .sort((a, b) => b.priority - a.priority)
 
-        if (sortedRedirectRules.length > 0) {
-            // apply all of the rules we can now
-            const redirectRule = sortedRedirectRules[0]
-            if (redirectRule) {
-                const index = links.findIndex(link => link.href === redirectRule.href)
-                if (index > -1) {
-                    links[index].redirect = redirectRule
-                }
+        const timeBasedRules = rules.filter(rule => rule.name === 'redirect' && rule.startTime && rule.endTime && isRuleActive(rule))
+        const alwaysActiveRules = rules.filter(rule => rule.name === 'redirect' && (!rule.startTime || !rule.endTime))
+
+        // Sort time-based rules by priority
+        const sortedTimeBasedRules = timeBasedRules.sort((a, b) => b.priority - a.priority)
+
+        // Determine which rules to apply
+        let redirectRule
+
+        if (sortedTimeBasedRules.length > 0) {
+            // Apply the highest priority time-based rule
+            redirectRule = sortedTimeBasedRules[0]
+        } else if (alwaysActiveRules.length > 0) {
+            // If no time-based rules are active, apply the highest priority always-active rule
+            const sortedAlwaysActiveRules = alwaysActiveRules.sort((a, b) => b.priority - a.priority)
+            const highestPriority = sortedAlwaysActiveRules[0].priority
+            const highestPriorityRules = sortedAlwaysActiveRules.filter(rule => rule.priority === highestPriority)
+
+            redirectRule = highestPriorityRules[Math.floor(Math.random() * highestPriorityRules.length)]
+        }
+
+        if (redirectRule) {
+            const index = links.findIndex(link => link.href === redirectRule.href)
+            if (index > -1) {
+                links[index].redirect = redirectRule
             }
         }
 
