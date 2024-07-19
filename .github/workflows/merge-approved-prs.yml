@@ -4,6 +4,9 @@ on:
   pull_request_review:
     types: [submitted]
 
+permissions:
+  contents: write
+  
 jobs:
   merge-pr:
     if: github.event.review.state == 'APPROVED'
