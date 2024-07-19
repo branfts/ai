@@ -21,9 +21,11 @@
             </div>
         </v-navigation-drawer>
         <v-main>
-            <router-view v-slot="{ Component }">
+            <router-view v-slot="{ Component, route }">
                 <keep-alive>
-                    <component :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="" />
+                    <transition name="custom-classes" :enter-active-class="route.meta.transition || 'animate__animated animate__fadeIn'">
+                        <component :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="" />
+                    </transition>
                 </keep-alive>
             </router-view>
         </v-main>
@@ -50,6 +52,7 @@
 </template>
 <style scoped></style>
 <script setup>
+import 'animate.css'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { ref, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'

@@ -18,6 +18,7 @@ export default (app) => {
                 name: 'myindex',
                 meta: {
                     title: 'My Index',
+                    transition: 'animate__animated animate__bounceIn',
                 },
                 component: () => import('@/views/User.vue')
             }, {
