@@ -8,10 +8,10 @@
             <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
                     <component v-if="link.icon" class="mr-2" :is="link.icon" />
-                    <img v-else :src="link.svg" class="mr-2" width="24" height="24" />
+                    <v-img style="border-radius: 25%" v-else :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i]" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                 </template>
             </v-list-item>
         </v-list>
@@ -23,7 +23,8 @@
                 </v-card-title>
                 <v-divider />
                 <v-card-text class="d-flex flex-column">
-                    <v-img :src="qrcode"></v-img>
+                    <v-img :src="qrcode" width="300"></v-img>
+                    <v-img src="/ai.logo.svg" width="30" style="position: absolute; margin: 40px 0 0 40px; background: white"></v-img>
                 </v-card-text>
                 <v-divider />
                 <v-card-actions>
@@ -131,7 +132,7 @@ function linkClickHandler(link) {
     gtag('event', 'link_click', details)
 }
 async function asyncInit() {
-    qrcode.value = await QRCode.toDataURL(qcLink.value)
+    qrcode.value = await QRCode.toDataURL(qcLink.value, { type: 'image/webp' })
 }
 function downloadHandler() {
     const link = document.createElement('a')
@@ -142,7 +143,7 @@ function downloadHandler() {
 
 asyncInit()
 onMounted(() => {
-    watch(dialog, dialog => {
+    watch(dialog, () => {
         if (!qrcode.value) {
             asyncInit()
         }
