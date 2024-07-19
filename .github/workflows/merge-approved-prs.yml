@@ -12,14 +12,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Extract PR number
+        id: extract-pr
+        run: |
+          echo "PR_NUMBER=$(echo '${GITHUB_REF_NAME}' | cut -d'/' -f1)" >> $GITHUB_ENV
+          
       - name: Get approval status
         uses: actions/github-script@v6
         with:
           script: |
+            console.log(process.env)
+            console.log('.............', ${{ github.event.number }})
+            
+            const pull_number = process.env.PR_NUMBER;
+            if (!pull_number) {
+              throw new Error('Pull request number is not available');
+            }
+            
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
+              pull_number
             });
       
             const approvedReviews = reviews.filter(review => review.state === 'APPROVED');
