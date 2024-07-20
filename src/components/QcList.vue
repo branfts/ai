@@ -146,8 +146,8 @@ async function asyncInit() {
 }
 function downloadHandler() {
     const link = document.createElement('a')
-    link.href = qcLink.value
-    link.download = `${window.location.origin}-${props.user.username}.png`
+    link.href = qrcode.value
+    link.download = `${window.location.hostname}-${props.user.username}.webp`
     link.click()
     gtag('event', 'link_download')
 }
