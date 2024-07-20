@@ -75,7 +75,6 @@ const buildInfo = ref()
 const links = {
     general: [
         { name: "Home", to: "/" },
-        { name: "FAQ", to: "/faq" },
         { name: "GitHub", href: "https://github.com/branfts/qc", target: "_blank", rel: "noopener", icon: GitHubIcon },
     ],
     legal: [

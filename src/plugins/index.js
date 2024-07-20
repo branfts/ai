@@ -11,7 +11,6 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import api from './api.plugin'
 import clipboard from './clipboard.plugin'
 import router from './router'
-import ghostPlugin from './ghost.plugin'
 import keycloakPlugin from './keycloak.plugin'
 import VueSocialSharing from 'vue-social-sharing'
 
@@ -36,7 +35,6 @@ export function registerPlugins(app) {
         })
         .use(pinia)
         .use(router)
-        .use(ghostPlugin)
         .use(vuetify)
         .use(api)
         .use(VueSocialSharing)

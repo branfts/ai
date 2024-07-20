@@ -7,13 +7,6 @@ export default (app) => {
 
         return [
             {
-                path: '/faq',
-                name: 'faq',
-                meta: {
-                    title: 'Frequently Asked Questions',
-                },
-                component: () => import('@/views/FAQ.vue')
-            }, {
                 path: '/u/:username?',
                 name: 'myindex',
                 meta: {
