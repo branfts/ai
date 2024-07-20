@@ -27,3 +27,4 @@ dev-dist
 
 *.crt
 *.key
+public/u/index.json
