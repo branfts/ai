@@ -7,11 +7,12 @@
 </template>
 <style scoped></style>
 <script setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 import QcList from './QcList.vue'
 import QcForm from './QcForm.vue'
 
+const { $getHostForName } = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const user = ref({})
 
@@ -34,7 +35,8 @@ async function asyncInit() {
     const { username } = route.params
 
     try {
-        const userConfig = username && await import(/* @vite-ignore */`/u/${route.params.username}.js`)
+        const userJsModule = `${$getHostForName(username)}/u/${route.params.username}.js`
+        const userConfig = username && await import(/* @vite-ignore */userJsModule)
         const { links, rules } = userConfig
 
         const timeBasedRules = rules.filter(rule => rule.name === 'redirect' && rule.startTime && rule.endTime && isRuleActive(rule))

@@ -5,10 +5,11 @@
             <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
         </div>
         <v-list>
-            <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.href" :title="link.title" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
+            <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
                     <component v-if="link.icon" class="mr-2" :is="link.icon" />
-                    <v-img style="border-radius: 25%" v-else :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
+                    <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
+                    <v-icon icon="link" size="small"></v-icon>
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
@@ -135,10 +136,9 @@ function copyHandler(name) {
 function linkClickHandler(link) {
     // Google Analytics 4 event tracking
     const details = {
-        owner: user.value.username,
+        username: props.user.username,
         ...link
     }
-    console.log(details)
     gtag('event', 'link_click', details)
 }
 async function asyncInit() {
@@ -163,7 +163,7 @@ onMounted(() => {
     })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {
-            window.location.href = links.value.find(link => link.redirect).href
+            window.location.href = links.value.find(link => link.redirect).url
         }
     })
 })

@@ -75,8 +75,9 @@ export default {
             })
         }
         function getIndexForName(name) {
-            const firstLetter = name[0]?.toLowerCase()
-            const secondLetter = name[1]?.toLowerCase()
+            const lowerCase = name.toLowerCase()
+            const firstLetter = lowerCase.slice(0, 1)
+            const secondLetter = lowerCase.slice(1, 2)
 
             /**
             // List of endpoints
@@ -91,17 +92,17 @@ export default {
             ]
             */
 
-            return !secondLetter ? firstLetter + 'l' : firstLetter + secondLetter >= 'l' ? 'z' : secondLetter
+            const index = !secondLetter ? `${firstLetter}l` : `${firstLetter}${secondLetter >= 'l' ? 'z' : 'l'}`
+            return index
         }
-        function getRepoForName(name) {
+        app.config.globalProperties.$getHostForName = (name) => {
             const index = getIndexForName(name)
-
-            return `https://ai-${index}.june07.com/u`
+            return `https://${index}.ai.june07.com`
         }
 
         async function fetchNamesFromSource(firstLettersString, url) {
             const rootUrl = `https://ai.june07.com/u`
-            const baseUrl = getRepoForName(firstLettersString)
+            const baseUrl = `${app.config.globalProperties.$getHostForName(firstLettersString)}/u`
 
             // Fetch names from the GitHub Pages directory
             try {

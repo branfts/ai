@@ -1,5 +1,5 @@
 <template>
-    <v-text-field v-if="!href" variant="outlined" label="URL" v-model="models.url" @keydown.enter="addHandler" rounded>
+    <v-text-field v-if="!props.link?.url" variant="outlined" label="URL" v-model="link.url" @keydown.enter="addHandler" rounded>
         <template v-slot:append-inner>
             <v-btn class="node-syntax-toggle-btn mr-2" variant="tonal" size="small" @click="addHandler" text="add" rounded />
         </template>
@@ -8,12 +8,12 @@
         <v-expansion-panels class="mb-1" flat bg-color="grey-lighten-4" rounded="xl" v-model="panel">
             <v-expansion-panel hide-actions @mouseleave="panel = undefined">
                 <v-expansion-panel-title class="d-flex">
-                    {{ href }}
+                    {{ link.url }}
                     <v-btn class="d-flex ml-auto justify-end" variant="text" density="compact" size="small" @click="deleteHandler" icon="cancel" />
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
-                    <v-text-field v-model="models.title" hide-details density="compact" label="title" variant="plain"></v-text-field>
-                    <v-text-field v-model="models.subtitle" hide-details density="compact" label="subtitle" variant="plain"></v-text-field>
+                    <v-text-field v-model="link.title" hide-details density="compact" label="title" variant="plain"></v-text-field>
+                    <v-text-field v-model="link.subtitle" hide-details density="compact" label="subtitle" variant="plain"></v-text-field>
                 </v-expansion-panel-text>
             </v-expansion-panel>
         </v-expansion-panels>
@@ -23,50 +23,50 @@
 :deep() .v-chip__content {
     width: 100%;
 }
+
 :deep() .v-expansion-panel-text__wrapper {
     padding-top: 0;
 }
+
 :deep() .v-field__input {
     padding-top: 0;
 }
 </style>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { isURL } from 'validator'
 
 const panel = ref()
-const models = ref({
-    url: '',
-    title: '',
-    subtitle: '',
-})
 const props = defineProps({
-    href: String,
+    link: Object,
 })
-const href = ref(props.href)
+const link = ref({
+    url: props.link?.url,
+    title: props.link?.title,
+    subtitle: props.link?.subtitle,
+})
+const emit = defineEmits(['add', 'update', 'delete'])
 
-const emit = defineEmits(['add', 'delete'])
 function addHandler() {
-    if (!models.value.url) return
+    if (!link.value.url) return
 
-    let url
-
-    if (!/^https?:\/\//.test(models.value.url)) {
-        url = 'https://' + models.value.url
+    if (!/^https?:\/\//.test(link.value.url)) {
+        link.value.url = 'https://' + link.value.url
     }
-    if (!isURL(url)) {
+    if (!isURL(link.value.url)) {
         return
     }
     try {
-        url = new URL(url)
-        href.value = url.href
-        emit('add', href.value)
+        new URL(link.value.url)
+        emit('add', link.value)
     } catch (e) {
-        href.value = undefined
+        link.value.url = undefined
     }
 }
 function deleteHandler() {
-    emit('delete', href.value)
-    href.value = undefined
+    emit('delete', link.value)
 }
+onMounted(() => {
+    watch(() => link.value.title + link.value.subtitle, () => emit('update', link.value))
+})
 </script>

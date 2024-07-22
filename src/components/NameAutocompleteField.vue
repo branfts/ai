@@ -1,5 +1,11 @@
 <template>
-    <v-autocomplete rounded :items="store.form.names" variant="outlined" class="my-3" label="Name" v-model="store.form.name" @update:search="updateSearchHandler" @update:modelValue="autocompleteUpdateHandler" hide-no-data />
+    <v-autocomplete rounded :items="store.form.names" variant="outlined" class="my-3" label="Name" v-model="store.form.name" @update:search="updateSearchHandler" @update:modelValue="autocompleteUpdateHandler" hide-no-data>
+        <template v-slot:item="{ item }">
+            <v-list-item :to="`/u/${item.value}`">
+                <v-list-item-title>{{ item.value }}</v-list-item-title>
+            </v-list-item>
+        </template>
+    </v-autocomplete>
 </template>
 <script setup>
 import { ref, computed, getCurrentInstance } from 'vue'
