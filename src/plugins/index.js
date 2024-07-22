@@ -13,6 +13,7 @@ import clipboard from './clipboard.plugin'
 import router from './router'
 import keycloakPlugin from './keycloak.plugin'
 import VueSocialSharing from 'vue-social-sharing'
+import indexdbPlugin from './indexdb.plugin'
 
 const {
     VITE_APP_KEYCLOAK_URL,
@@ -37,6 +38,7 @@ export function registerPlugins(app) {
         .use(router)
         .use(vuetify)
         .use(api)
+        .use(indexdbPlugin)
         .use(VueSocialSharing)
     app.provide('clipboard', clipboard)
 }

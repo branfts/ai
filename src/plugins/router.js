@@ -15,6 +15,16 @@ export default (app) => {
                 },
                 component: () => import('@/views/User.vue')
             }, {
+                path: '/signin|/login',
+                name: 'signin',
+                component: () => {
+                    const urlParams = new URLSearchParams(window.location.search)
+                    const redirectParam = urlParams.get('redirect')
+                    const redirectUri = redirectParam || window.location.origin
+
+                    $keycloak.value.login({ redirectUri })
+                }
+            }, {
                 path: '/:catchAll(.*)',
                 name: 'catchall',
                 component: () => import('@/views/Home.vue')

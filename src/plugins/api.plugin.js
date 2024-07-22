@@ -2,12 +2,12 @@ import axios from "axios"
 
 const {
     MODE,
-    VITE_APP_API_SERVER,
+    VITE_APP_API_SERVER
 } = import.meta.env
 
 const axiosInstance = axios.create({
     headers: {
-        "x-application": "qc-web",
+        "x-application": "ai-web",
     },
     withCredentials: true
 })
@@ -92,7 +92,8 @@ const apiService = () => {
             } catch (error) {
                 document.getElementById('release-info').textContent = `Error: ${error.message}`
             }
-        }
+        },
+        add: async (auth, data) => await request({ auth, data, method: 'POST', url: `${VITE_APP_API_SERVER}/v1/ai/add` }),
     }
 }
 

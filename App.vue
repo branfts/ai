@@ -24,7 +24,7 @@
             <router-view v-slot="{ Component, route }">
                 <keep-alive>
                     <transition name="custom-classes" :enter-active-class="route.meta.transition || 'animate__animated animate__fadeIn'">
-                        <component :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="" />
+                        <component :auth="auth" :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="" />
                     </transition>
                 </keep-alive>
             </router-view>
@@ -56,17 +56,20 @@ import 'animate.css'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { ref, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'
+import { useRoute } from 'vue-router'
 
 import { parseSocialLinks } from "./src/utils"
 
+const route = useRoute()
 const { smAndDown } = useDisplay()
-const { $api } = getCurrentInstance().appContext.config.globalProperties
+const { $keycloak, $api } = getCurrentInstance().appContext.config.globalProperties
 const version = ref()
 const snackbarDefault = {
     active: false,
     icon: 'info',
     message: undefined,
 }
+const auth = ref({ wtf: 'wtf' })
 const collapse = ref(smAndDown.value ? true : false)
 const snackbar = ref({ ...snackbarDefault })
 const lastBuild = ref()
@@ -112,6 +115,19 @@ function reload() {
     url.searchParams.set('cache', Date.now())
     window.location.href = url.toString()
 }
+async function doAuth(redirect) {
+    await $keycloak.value.isLoaded
+    if ($keycloak.value.isAuthenticated) {
+        auth.value = {
+            token: $keycloak.value.token,
+            preferred_username: $keycloak.value.tokenParsed.preferred_username,
+            ...auth.value
+        }
+        console.log('auth: ', auth.value)
+    }
+}
+
+doAuth()
 checkVersion()
 versionCheckIntervalId.value = setInterval(checkVersion, 60000)
 
