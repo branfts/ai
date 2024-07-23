@@ -6,8 +6,8 @@
             </template>
 
             <v-app-bar-title class="font-weight-light"></v-app-bar-title>
-            <v-btn v-show="!collapse" v-for="link of links.general" :to="link.to" :href="link.href" variant="text" :target="link.target" :rel="link.rel" class="text-capitalize" :size="smAndDown ? 'small' : undefined" :class="smAndDown ? 'px-0' : ''" :text="smAndDown && /github/i.test(link.name) ? undefined : link.name" :icon="smAndDown && /github/i.test(link.name) ? true : undefined">
-                <component v-if="link.icon" class="mr-2" :is="link.icon" />
+            <v-btn v-show="!collapse" v-for="link of links.general" :to="link.to" :href="link.href" variant="text" :target="link.target" :rel="link.rel" class="text-capitalize mr-1" :size="smAndDown ? 'small' : undefined" :class="smAndDown ? 'px-0' : ''" :text="smAndDown && /github/i.test(link.name) ? undefined : link.name" :icon="smAndDown && /github/i.test(link.name) ? true : undefined" rounded>
+                <component v-if="link.icon" :is="link.icon" />
                 <span v-else v-html="link.name"></span>
             </v-btn>
             <v-spacer></v-spacer>

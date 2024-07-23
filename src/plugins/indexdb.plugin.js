@@ -9,8 +9,8 @@ export default {
     install(app) {
         const dbPromise = openDB()
 
-        app.config.globalProperties.$getNames = async function (firstLettersString) {
-            if (!firstLettersString) return []
+        app.config.globalProperties.$getNames = async function (firstCharsString) {
+            if (!firstCharsString) return []
 
             const db = await dbPromise
             const results = new Set()
@@ -34,7 +34,7 @@ export default {
 
             // Function to query the database and cache results
             const queryDatabase = async () => {
-                const indexKey = getIndexForName(firstLettersString)
+                const indexKey = getIndexForName(firstCharsString)
                 const allResults = await searchInDB(indexKey)
                 return allResults
             }
@@ -44,8 +44,8 @@ export default {
             dbResults?.forEach(name => results.add(name))
 
             // Asynchronously update the IndexedDB with new names
-            const indexKey = getIndexForName(firstLettersString)
-            const newNames = await fetchNamesFromSource(firstLettersString)
+            const indexKey = getIndexForName(firstCharsString)
+            const newNames = await fetchNamesFromSource(firstCharsString)
             const transaction = db.transaction(OBJECT_STORE_NAME, 'readwrite')
             const store = transaction.objectStore(OBJECT_STORE_NAME)
 
@@ -76,12 +76,16 @@ export default {
         }
         function getIndexForName(name) {
             const lowerCase = name.toLowerCase()
-            const firstLetter = lowerCase.slice(0, 1)
-            const secondLetter = lowerCase.slice(1, 2)
+            const firstChar = lowerCase.slice(0, 1)
+            const secondChar = lowerCase.slice(1, 2)
 
+            if (!isNaN(Number(firstChar))) {
+                return `${firstChar}0`
+            }
             /**
             // List of endpoints
             const indexes = [
+                '00', '01', '02', '03', '04', '05', '06', '07', '08', '09',
                 'al', 'az', 'bl', 'bz', 'cl', 'cz', 'dl', 'dz',
                 'el', 'ez', 'fl', 'fz', 'gl', 'gz', 'hl', 'hz',
                 'il', 'iz', 'jl', 'jz', 'kl', 'kz', 'll', 'lz',
@@ -92,7 +96,7 @@ export default {
             ]
             */
 
-            const index = !secondLetter ? `${firstLetter}l` : `${firstLetter}${secondLetter >= 'l' ? 'z' : 'l'}`
+            const index = !secondChar ? `${firstChar}l` : `${firstChar}${secondChar >= 'l' ? 'z' : 'l'}`
             return index
         }
         app.config.globalProperties.$getHostForName = (name) => {
@@ -104,9 +108,9 @@ export default {
             return `https://github.com/branfts/ai-${index}`
         }
 
-        async function fetchNamesFromSource(firstLettersString, url) {
+        async function fetchNamesFromSource(firstCharsString, url) {
             const rootUrl = `https://ai.june07.com/u`
-            const baseUrl = `${app.config.globalProperties.$getHostForName(firstLettersString)}/u`
+            const baseUrl = `${app.config.globalProperties.$getHostForName(firstCharsString)}/u`
 
             // Fetch names from the GitHub Pages directory
             try {
@@ -128,7 +132,7 @@ export default {
                 return names
             } catch (error) {
                 if (error) {
-                    return fetchNamesFromSource(firstLettersString, rootUrl)
+                    return fetchNamesFromSource(firstCharsString, rootUrl)
                 }
                 console.error('There was a problem with the fetch operation:', error)
                 return []

@@ -23,7 +23,7 @@
                     <v-btn class="ml-2 text-center" variant="tonal" text="Sign Out" size="x-small" to="/signout" />
                 </div>
                 <div v-else class="text-caption mb-4">
-                    Sign In to add users to the list
+                    Sign in to add links
                     <v-btn class="ml-2 text-center" variant="tonal" text="Sign In" size="x-small" to="/signin" />
                 </div>
                 <v-btn class="text-center" variant="tonal" text="submit" :disabled="disabled" @click="submit" />

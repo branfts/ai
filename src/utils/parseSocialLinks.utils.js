@@ -1,7 +1,19 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon  } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
+        slug: 'target',
+        re: /^(https?:\/\/)?(www|goto\.)?target\.com\/.+$/,
+        icon: TargetIcon
+    },{
+        slug: 'amazon',
+        re: /^(https?:\/\/)?(www\.)?amazon\.com\/.+$/,
+        icon: AmazonIcon
+    },{
+        slug: 'cashapp',
+        re: /^(https?:\/\/)?(www\.)?cash\.app\/.+$/,
+        icon: CashAppIcon
+    },{
         slug: 'onlyfans',
         re: /^(https?:\/\/)?(www\.)?onlyfans\.com\/.+$/,
         icon: OnlyFansIcon
