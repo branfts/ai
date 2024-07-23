@@ -99,6 +99,10 @@ export default {
             const index = getIndexForName(name)
             return `https://${index}.ai.june07.com`
         }
+        app.config.globalProperties.$getRepoForName = (name) => {
+            const index = getIndexForName(name)
+            return `https://github.com/branfts/ai-${index}`
+        }
 
         async function fetchNamesFromSource(firstLettersString, url) {
             const rootUrl = `https://ai.june07.com/u`

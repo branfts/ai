@@ -1,9 +1,16 @@
 <template>
     <v-container fluid :class="smAndDown ? 'pa-0' : ''">
-        <div class="d-flex align-center justify-center">
-            <div class="text-h6 text-center">{{ user?.username }}</div>
-            <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
-        </div>
+        <v-card flat class="w-100">
+            <v-card-title>
+                <div class="d-flex align-center justify-center">
+                    <div class="text-h6 text-center">{{ user?.username }}</div>
+                    <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
+                </div>
+            </v-card-title>
+            <v-card-subtitle class="pa-0 mt-n4 text-end">
+                <v-btn class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" variant="outlined" size="small" :append-icon="GitHubIcon" />
+            </v-card-subtitle>
+        </v-card>
         <v-list>
             <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
@@ -80,12 +87,14 @@
 <script setup>
 import 'animate.css'
 import QRCode from 'qrcode'
-import { ref, computed, inject, onMounted, watch } from 'vue'
+import { ref, computed, inject, onMounted, watch, getCurrentInstance } from 'vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
+import { GitHubIcon } from 'vue3-simple-icons'
 
 import FlipBoard from '@/components/FlipBoard.vue'
 
 const clipboard = inject('clipboard')
+const { $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
 const binary = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(2)).join(' '))
 const dialog = ref(false)
 const { smAndDown } = useDisplay()
@@ -106,6 +115,7 @@ const parseSocialLinks = inject('parseSocialLinks')
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
 const socialLinks = computed(() => parseSocialLinks(links.value))
 const qrcode = ref()
+const repo = $getRepoForName(props.user.username)
 
 // console.log(socialLinks.value)
 function copyDataUrlToClipboard(dataUrl) {
