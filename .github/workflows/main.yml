@@ -48,8 +48,9 @@ jobs:
           cp dist/index.html dist/404.html
       - name: Generate Index
         run: |
-          ls public/u
-          for file in `ls dist/u/*.js`; do basename -s .js $file; done | jq -R . | jq -cs . > dist/u/index.json
+          if [ -d dist/u ]; then
+            for file in `ls dist/u/*.js`; do basename -s .js $file; done | jq -R . | jq -cs . > dist/u/index.json
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
