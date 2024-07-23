@@ -1,10 +1,14 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
         slug: 'onlyfans',
         re: /^(https?:\/\/)?(www\.)?onlyfans\.com\/.+$/,
         icon: OnlyFansIcon
+    },{
+        slug: 'linktree',
+        re: /^(https?:\/\/)?(www\.)?linktr\.ee\/.+$/,
+        icon: LinktreeIcon
     },{
         slug: 'instagram',
         re: /^(https?:\/\/)?(www\.)?instagram\.com\/.+$/,
@@ -22,6 +26,10 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(www\.)?tiktok\.com\/.+$/,
         icon: TikTokIcon
     },{
+        slug: 'twitter',
+        re: /^(https?:\/\/)?(www\.)?x\.com\/.+$/,
+        icon: XIcon
+    },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
         svg: '/logos/throne.svg'
@@ -31,7 +39,7 @@ export default function parseSocialLinks(links) {
         svg: '/logos/beacons.svg'
     }]
     const parsed = links.map(link => {
-        const network = networks.find(network => network.re.test(link.href))
+        const network = networks.find(network => network.re.test(link.url))
         
         return {
             ...link,

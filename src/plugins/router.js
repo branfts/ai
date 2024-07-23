@@ -15,6 +15,16 @@ export default (app) => {
                 },
                 component: () => import('@/views/User.vue')
             }, {
+                path: '/signout|/logout',
+                name: 'signout',
+                component: () => {
+                    const urlParams = new URLSearchParams(window.location.search)
+                    const redirectParam = urlParams.get('redirect')
+                    const redirectUri = redirectParam || window.location.origin
+
+                    $keycloak.value.logout({ redirectUri })
+                }
+            }, {
                 path: '/signin|/login',
                 name: 'signin',
                 component: () => {

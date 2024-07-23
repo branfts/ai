@@ -7,9 +7,10 @@
         <v-list>
             <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0">
                 <template v-slot:prepend>
-                    <component v-if="link.icon" class="mr-2" :is="link.icon" />
+                    <component v-if="link.icon" class="mr-8" :is="link.icon" />
                     <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
-                    <v-icon icon="link" size="small"></v-icon>
+                    <v-icon v-else-if="/mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\?[a-zA-Z0-9=&%+-]*)?/.test(link.url)" icon="mail" size="24"></v-icon>
+                    <v-icon v-else icon="link" size="24"></v-icon>
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />

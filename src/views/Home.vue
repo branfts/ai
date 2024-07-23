@@ -18,7 +18,14 @@
                 </v-form>
             </v-card-text>
             <v-card-actions class="flex-column justify-center">
-                <div class="text-caption mb-4" v-if="auth?.preferred_username">signed in as <span class="font-weight-bold">{{ auth.preferred_username }}</span></div>
+                <div class="text-caption mb-4" v-if="auth?.token">
+                    signed in as <span class="font-weight-bold">{{ auth.preferred_username }}</span>
+                    <v-btn class="ml-2 text-center" variant="tonal" text="Sign Out" size="x-small" to="/signout" />
+                </div>
+                <div v-else class="text-caption mb-4">
+                    Sign In to add users to the list
+                    <v-btn class="ml-2 text-center" variant="tonal" text="Sign In" size="x-small" to="/signin" />
+                </div>
                 <v-btn class="text-center" variant="tonal" text="submit" :disabled="disabled" @click="submit" />
             </v-card-actions>
             <div class="d-flex justify-center align-center" v-if="checking">
@@ -57,7 +64,7 @@ const props = defineProps({
 })
 const store = useAppStore()
 const links = computed(() => store.form.links)
-const disabled = computed(() => !store.form.name || !links.value.length)
+const disabled = computed(() => !props.auth?.token ||!store.form.name || !links.value.length)
 const inputLinkRef = ref()
 
 async function submit() {
