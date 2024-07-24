@@ -8,10 +8,11 @@
         <v-expansion-panels class="mb-1" flat bg-color="grey-lighten-4" rounded="xl" v-model="panel">
             <v-expansion-panel hide-actions @mouseleave="panel = undefined">
                 <v-expansion-panel-title class="d-flex">
-                    {{ link.url }}
+                    <div class="text-truncate">{{ link.url }}</div>
                     <v-btn class="d-flex ml-auto justify-end" variant="text" density="compact" size="small" @click="deleteHandler" icon="cancel" />
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
+                    <v-text-field v-model="link.url" hide-details density="compact" label="url" variant="plain" readonly></v-text-field>
                     <v-text-field v-model="link.title" hide-details density="compact" label="title" variant="plain"></v-text-field>
                     <v-text-field v-model="link.subtitle" hide-details density="compact" label="subtitle" variant="plain"></v-text-field>
                 </v-expansion-panel-text>
@@ -36,6 +37,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { isURL } from 'validator'
 
+const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const panel = ref()
 const props = defineProps({
     link: Object,
@@ -50,17 +52,23 @@ const emit = defineEmits(['add', 'update', 'delete'])
 function addHandler() {
     if (!link.value.url) return
 
-    if (!/^https?:\/\//.test(link.value.url)) {
-        link.value.url = 'https://' + link.value.url
-    }
-    if (!isURL(link.value.url)) {
-        return
-    }
-    try {
-        new URL(link.value.url)
+    if (!reEmail.test(link.value.url)) {
+        if (!/^https?:\/\//.test(link.value.url)) {
+            link.value.url = 'https://' + link.value.url
+        }
+
+        if (!isURL(link.value.url)) {
+            return
+        }
+        try {
+            new URL(link.value.url)
+            emit('add', link.value)
+        } catch (e) {
+            link.value.url = undefined
+        }
+    } else if (reEmail.test(link.value.url)) {
+        link.value.url = 'mailto:' + link.value.url
         emit('add', link.value)
-    } catch (e) {
-        link.value.url = undefined
     }
 }
 function deleteHandler() {
