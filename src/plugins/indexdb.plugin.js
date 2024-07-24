@@ -3,7 +3,6 @@
 const DB_NAME = 'NamesDB'
 const DB_VERSION = 1
 const OBJECT_STORE_NAME = 'names'
-const cache = {}
 
 export default {
     install(app) {
@@ -108,7 +107,7 @@ export default {
             return `https://github.com/branfts/ai-${index}`
         }
 
-        async function fetchNamesFromSource(firstCharsString, url) {
+        async function fetchNamesFromSource(firstCharsString, url, retry = 0) {
             const rootUrl = `https://ai.june07.com/u`
             const baseUrl = `${app.config.globalProperties.$getHostForName(firstCharsString)}/u`
 
@@ -131,8 +130,10 @@ export default {
 
                 return names
             } catch (error) {
-                if (error) {
-                    return fetchNamesFromSource(firstCharsString, rootUrl)
+                if (error && retry <= 3) {
+                    retry += 1
+                    await new Promise(resolve => setTimeout(resolve, 2000 * retry))
+                    return fetchNamesFromSource(firstCharsString, rootUrl, retry)
                 }
                 console.error('There was a problem with the fetch operation:', error)
                 return []
