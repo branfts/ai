@@ -12,7 +12,7 @@
             </v-card-subtitle>
         </v-card>
         <v-list>
-            <v-list-item v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @click="linkClickHandler(link)" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
+            <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
                 <template v-slot:prepend>
                     <component v-if="link.icon" class="mr-8" :is="link.icon" />
                     <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
@@ -24,6 +24,7 @@
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board-clicks :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" tooltip="clicks" :modelValue="link.clicks" v-if="link.clicks" />
                 </template>
             </v-list-item>
         </v-list>
@@ -64,7 +65,7 @@
                 </v-card-actions>
             </v-card>
             <v-card rounded="xl" class="my-1 pb-3">
-                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Link</v-card-title>
+                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">URL</v-card-title>
                 <v-card-subtitle>
                     {{ qcLink }}
                 </v-card-subtitle>
@@ -93,16 +94,20 @@ import QRCode from 'qrcode'
 import { ref, computed, inject, onMounted, watch, getCurrentInstance } from 'vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 import { GitHubIcon } from 'vue3-simple-icons'
+import { v5 as uuidv5 } from 'uuid'
 
 import FlipBoard from '@/components/FlipBoard.vue'
+import FlipBoardClicks from '@/components/FlipBoardClicks.vue'
 
+const analytics = ref()
 const clipboard = inject('clipboard')
-const { $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
+const { $api, $keycloak, $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
 const binary = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(2)).join(' '))
 const dialog = ref(false)
 const { smAndDown } = useDisplay()
 const props = defineProps({
-    user: Object
+    user: Object,
+    auth: Object
 })
 const tooltips = ref({
     binary: false,
@@ -116,7 +121,16 @@ const timer = ref()
 const parseSocialLinks = inject('parseSocialLinks')
 
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
-const socialLinks = computed(() => parseSocialLinks(links.value))
+const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
+    if (!analytics.value) return link
+    link.uuid = uuidv5(link.url, uuidv5.URL)
+    const matchingLinkClickAnalytics = analytics.value?.linkClicks && Object.entries(analytics.value.linkClicks).find(([key, value]) => link.uuid.includes(key))?.[1]
+
+    if (matchingLinkClickAnalytics) {
+        link.clicks = Number(matchingLinkClickAnalytics.count)
+    }
+    return link
+}).sort((a, b) => !a?.clicks || a.clicks > b.clicks ? 1 : -1))
 const qrcode = ref()
 const repo = $getRepoForName(props.user.username)
 
@@ -147,16 +161,12 @@ function copyHandler(name) {
     gtag('event', 'link_copy', { method: name })
 }
 
-function linkClickHandler(link) {
-    // Google Analytics 4 event tracking
-    const details = {
-        username: props.user.username,
-        ...link
-    }
-    gtag('event', 'link_click', details)
-}
 async function asyncInit() {
     qrcode.value = await QRCode.toDataURL(qcLink.value, { type: 'image/webp' })
+    await $keycloak.value.isLoaded
+    if ($keycloak.value.isAuthenticated) {
+        analytics.value = await $api.analytics(props.auth, props.user.username)
+    }
 }
 function downloadHandler() {
     const link = document.createElement('a')

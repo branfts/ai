@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <qc-list v-if="user?.links" :user="user" />
+        <qc-list v-if="user?.links" :user="user" :auth="auth" />
         <span v-else>No data...</span>
         <qc-form />
     </v-container>
@@ -15,6 +15,9 @@ import QcForm from './QcForm.vue'
 const { $getHostForName } = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
 const user = ref({})
+const props = defineProps({
+    auth: Object
+})
 
 function isRuleActive(rule) {
     const now = new Date()
@@ -61,7 +64,7 @@ async function asyncInit() {
         }
 
         if (redirectRule) {
-            const index = links.findIndex(link => link.href === redirectRule.href)
+            const index = links.findIndex(link => link.url === redirectRule.url)
             if (index > -1) {
                 links[index].redirect = redirectRule
             }

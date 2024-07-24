@@ -94,6 +94,7 @@ const apiService = () => {
             }
         },
         add: async (auth, data) => await request({ auth, data, method: 'POST', url: `${VITE_APP_API_SERVER}/v1/ai/add` }),
+        analytics: async (auth, name) => await request({ auth, url: `${VITE_APP_API_SERVER}/v1/ai/analytics/${name}` }),
     }
 }
 
