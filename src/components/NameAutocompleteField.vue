@@ -14,6 +14,7 @@ import { useAppStore } from '@/store/app'
 const rules = [
     () => !!store.form.name || 'A username is required.',
     () => /^[a-zA-Z0-9]{2}[a-zA-Z0-9_-]{1,}$/.test(store.form.name) || 'Usernames can only include letters, numbers, underscores, and hyphens. The first two characters must be alphanumeric, and the username must be at least 3 characters long.',
+    () => !store.form.names.includes(store.form.name) || 'That username is already taken.',
 ]
 const { $getNames } = getCurrentInstance().appContext.config.globalProperties
 const store = useAppStore()

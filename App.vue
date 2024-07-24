@@ -25,7 +25,7 @@
             <router-view v-slot="{ Component, route }">
                 <keep-alive>
                     <transition name="custom-classes" :enter-active-class="route.meta.transition || 'animate__animated animate__fadeIn'">
-                        <component :auth="auth" :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="" />
+                        <component :auth="auth" :is="Component" @change-theme="store.theme = store.theme === 'light' ? 'dark' : 'light'" @error="errorHandler" />
                     </transition>
                 </keep-alive>
             </router-view>
@@ -41,7 +41,10 @@
                     <v-icon :icon="snackbar.icon" :color="snackbar.iconColor" />
                 </v-col>
                 <v-col cols="10" class="d-flex align-center justify-center">
-                    <span v-if="error">{{ snackbar.message }}</span>
+                    <div v-if="snackbar.error">
+                        <span v-if="snackbar.error?.response?.data">{{ snackbar.error.response.data.match(/Error:([^\.]*)/)?.[1] }}</span>
+                        <span v-else>{{ snackbar.error.message }}</span>
+                    </div>
                     <span v-else @click="reload" class="font-weight-light" v-bind:class="smAndDown ? 'caption' : ''" style="cursor: pointer">App update available.</span>
                 </v-col>
                 <v-col cols="1" class="d-flex align-center justify-center">
@@ -66,6 +69,7 @@ const { $keycloak, $api } = getCurrentInstance().appContext.config.globalPropert
 const build = ref()
 const snackbarDefault = {
     active: false,
+    error: false,
     icon: 'info',
     message: undefined,
 }
@@ -107,10 +111,15 @@ function snackbarCloseHandler() {
     snackbar.value.active = false
     setTimeout(() => {
         snackbar.value = { ...snackbarDefault }
-        if (error) {
-            error.value = false
-        }
-    })
+    }, 500)
+}
+function errorHandler(error) {
+    snackbar.value = {
+        error,
+        active: true,
+        iconColor: 'red',
+        icon: 'error',
+    }
 }
 function reload() {
     const url = new URL(window.location.href)

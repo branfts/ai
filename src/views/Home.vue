@@ -55,6 +55,7 @@ import { until } from 'async'
 import LinkField from '@/components/LinkField.vue'
 import NameAutocompleteField from '@/components/NameAutocompleteField.vue'
 
+const emit = defineEmits(['error'])
 const { $api, $getHostForName } = getCurrentInstance().appContext.config.globalProperties
 const loading = ref(false)
 const checking = ref(false)
@@ -75,7 +76,8 @@ async function submit() {
         rules: store.form.rules.length ? store.form.rules : undefined,
     }
     try {
-        const response = await $api.add(props.auth, payload)
+        await $api.add(props.auth, payload)
+
         const moduleUrl = `${await $getHostForName(store.form.name)}/u/${store.form.name}.js`
         let attempts = 0
 
@@ -98,7 +100,7 @@ async function submit() {
             async () => await new Promise(resolve => setTimeout(resolve, 10000))
         )
     } catch (e) {
-        console.error(e)
+        emit('error', e)
     } finally {
         loading.value = false
         checking.value = false
