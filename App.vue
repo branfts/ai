@@ -10,6 +10,7 @@
                 <component v-if="link.icon" :is="link.icon" />
                 <span v-else v-html="link.name"></span>
             </v-btn>
+            <div class="text-caption font-weight-light font-italic">v<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? version : 'dev' }}</span></div>
             <v-spacer></v-spacer>
             <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 text-caption" :text="link.name" />
             <div v-show="!collapse && !smAndDown" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>
@@ -56,11 +57,10 @@ import 'animate.css'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { ref, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'
-import { useRoute } from 'vue-router'
 
 import { parseSocialLinks } from "./src/utils"
 
-const route = useRoute()
+const { MODE } = import.meta.env
 const { smAndDown } = useDisplay()
 const { $keycloak, $api } = getCurrentInstance().appContext.config.globalProperties
 const version = ref()
@@ -123,7 +123,6 @@ async function doAuth(redirect) {
             preferred_username: $keycloak.value.tokenParsed.preferred_username,
             ...auth.value
         }
-        console.log('auth: ', auth.value)
     }
 }
 
