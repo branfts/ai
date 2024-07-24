@@ -10,7 +10,7 @@
                 <component v-if="link.icon" :is="link.icon" />
                 <span v-else v-html="link.name"></span>
             </v-btn>
-            <div class="text-caption font-weight-light font-italic">v<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? version : 'dev' }}</span></div>
+            <div class="text-caption font-weight-light font-italic">build<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? build.slice(-5) : 'dev' }}</span></div>
             <v-spacer></v-spacer>
             <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 text-caption" :text="link.name" />
             <div v-show="!collapse && !smAndDown" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>
@@ -63,7 +63,7 @@ import { parseSocialLinks } from "./src/utils"
 const { MODE } = import.meta.env
 const { smAndDown } = useDisplay()
 const { $keycloak, $api } = getCurrentInstance().appContext.config.globalProperties
-const version = ref()
+const build = ref()
 const snackbarDefault = {
     active: false,
     icon: 'info',
@@ -73,7 +73,7 @@ const auth = ref({ wtf: 'wtf' })
 const collapse = ref(smAndDown.value ? true : false)
 const snackbar = ref({ ...snackbarDefault })
 const lastBuild = ref()
-const versionCheckIntervalId = ref()
+const buildCheckIntervalId = ref()
 const buildInfo = ref()
 const links = {
     general: [
@@ -86,13 +86,13 @@ const links = {
     ],
 }
 
-const checkVersion = async () => {
+const checkBuild = async () => {
     buildInfo.value = await $api.buildInfo()
 
     if (!buildInfo.value?.build_date) {
         return
     }
-    version.value = buildInfo.value.commit_sha
+    build.value = buildInfo.value.commit_sha
     if (lastBuild.value && lastBuild.value?.build_date !== buildInfo.value.build_date) {
         snackbar.value.active = true
         // TODO: put some extra check here...
@@ -127,8 +127,8 @@ async function doAuth(redirect) {
 }
 
 doAuth()
-checkVersion()
-versionCheckIntervalId.value = setInterval(checkVersion, 60000)
+checkBuild()
+buildCheckIntervalId.value = setInterval(checkBuild, 60000)
 
 provide('parseSocialLinks', parseSocialLinks)
 </script>
