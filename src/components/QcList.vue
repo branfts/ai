@@ -91,7 +91,7 @@
 <script setup>
 import 'animate.css'
 import QRCode from 'qrcode'
-import { ref, computed, inject, onMounted, watch, getCurrentInstance } from 'vue'
+import { ref, computed, inject, onMounted, watch, getCurrentInstance, nextTick } from 'vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { v5 as uuidv5 } from 'uuid'
@@ -165,7 +165,7 @@ async function asyncInit() {
     qrcode.value = await QRCode.toDataURL(qcLink.value, { type: 'image/webp' })
     await $keycloak.value.isLoaded
     if ($keycloak.value.isAuthenticated) {
-        analytics.value = await $api.analytics(props.auth, props.user.username)
+        nextTick(async () => analytics.value = await $api.analytics(props.auth, props.user.username))
     }
 }
 function downloadHandler() {

@@ -12,7 +12,7 @@
             </v-btn>
             <div class="text-caption font-weight-light font-italic">build<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? build.slice(-5) : 'dev' }}</span></div>
             <v-spacer></v-spacer>
-            <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 text-caption" :text="link.name" />
+            <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 mr-1 text-caption" :text="link.name" />
             <div v-show="!collapse && !smAndDown" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>
             <v-spacer v-if="smAndDown"></v-spacer>
         </v-app-bar>
@@ -55,7 +55,7 @@
 <script setup>
 import 'animate.css'
 import { GitHubIcon } from 'vue3-simple-icons'
-import { ref, provide, getCurrentInstance } from "vue"
+import { ref, computed, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 
 import { parseSocialLinks } from "./src/utils"
@@ -69,22 +69,24 @@ const snackbarDefault = {
     icon: 'info',
     message: undefined,
 }
-const auth = ref({ wtf: 'wtf' })
+const auth = ref()
 const collapse = ref(smAndDown.value ? true : false)
 const snackbar = ref({ ...snackbarDefault })
 const lastBuild = ref()
 const buildCheckIntervalId = ref()
 const buildInfo = ref()
-const links = {
+const links = computed(() => ({
     general: [
         { name: "Home", to: "/" },
+        !$keycloak.value.isAuthenticated && { name: "Sign In", to: "/login" },
         { name: "GitHub", href: "https://github.com/branfts/qc", target: "_blank", rel: "noopener", icon: GitHubIcon },
-    ],
+    ].filter(x => x),
     legal: [
+        $keycloak.value.isAuthenticated && { name: "Sign Out", to: "/logout" },
         { name: "Privacy", href: "https://privacy.june07.com" },
         { name: "Terms", href: "https://terms.june07.com" },
-    ],
-}
+    ].filter(x => x),
+}))
 
 const checkBuild = async () => {
     buildInfo.value = await $api.buildInfo()
