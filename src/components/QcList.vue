@@ -23,11 +23,11 @@
                     <span v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</span>
                 </template>
                 <template v-slot:append>
+                    <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
                     <div v-if="!editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
                     </div>
-                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
-                    <flip-board-clicks :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" tooltip="clicks" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
                 </template>
                 <!-- eslint-disable -->
                 <link-field v-if="editing[link.uuid]" :key="link.uuid" :link="link" @update="link => store.form.links[socialLinks.findIndex(l => l.url !== '' && l.url === link.url)] = link" @delete="editing[link.uuid] = false" />
@@ -102,7 +102,7 @@ import { GitHubIcon } from 'vue3-simple-icons'
 import { v5 as uuidv5 } from 'uuid'
 
 import FlipBoard from '@/components/FlipBoard.vue'
-import FlipBoardClicks from '@/components/FlipBoardClicks.vue'
+import FlipBoardCounter from '@/components/FlipBoardCounter.vue'
 import LinkField from './LinkField.vue'
 
 const editing = ref({})
@@ -129,6 +129,8 @@ const parseSocialLinks = inject('parseSocialLinks')
 
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
 const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
+    // hack fix for old syntax
+    link.href && !link.url && (link.url = link.href)
     if (!analytics.value) return link
     link.uuid = uuidv5(link.url, uuidv5.URL)
     editing.value[link.uuid] = false
@@ -195,7 +197,7 @@ onMounted(() => {
     })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {
-            window.location.href = links.value.find(link => link.redirect).url
+            window.location.href = socialLinks.value.find(link => link.redirect).url
         }
     })
 })
