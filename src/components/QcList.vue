@@ -14,7 +14,7 @@
         <v-list>
             <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
                 <template v-slot:prepend>
-                    <component v-if="link.icon" class="mr-8" :is="link.icon" />
+                    <component v-if="link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${link.color}` : 'filter: grayscale(100%)'" />
                     <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
                     <v-icon v-else-if="/mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\?[a-zA-Z0-9=&%+-]*)?/.test(link.url)" icon="mail" size="24"></v-icon>
                     <v-icon v-else icon="link" size="24"></v-icon>

@@ -1,8 +1,11 @@
 <template>
-    <v-autocomplete rounded :items="store.form.names" variant="outlined" class="my-3" label="Name" v-model="store.form.name" :rules="rules" @update:search="updateSearchHandler" @update:modelValue="autocompleteUpdateHandler" hide-no-data validate-on="blur">
+    <v-autocomplete rounded :items="store.form.names" variant="outlined" class="my-3" label="Name" v-model="store.form.name" :rules="rules" @update:search="updateSearchHandler" @update:modelValue="autocompleteUpdateHandler" hide-no-data validate-on="blur" autocomplete="off">
         <template v-slot:item="{ item }">
             <v-list-item :to="`/u/${item.value}`">
                 <v-list-item-title>{{ item.value }}</v-list-item-title>
+                <template v-slot:append>
+                    <v-icon icon="list" />
+                </template>
             </v-list-item>
         </template>
     </v-autocomplete>

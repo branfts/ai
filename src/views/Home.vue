@@ -26,11 +26,11 @@
                     Sign in to add links
                     <v-btn class="ml-2 text-center" variant="tonal" text="Sign In" size="x-small" to="/signin" />
                 </div>
-                <v-btn class="text-center" variant="tonal" text="submit" :disabled="disabled" @click="submit" />
+                <v-btn class="text-center" variant="tonal" text="submit" :disabled="disabled" @click="submit" :loading="loading" />
             </v-card-actions>
-            <div class="d-flex justify-center align-center" v-if="checking">
+            <div class="d-flex justify-center align-center" v-if="loading || checking">
                 <v-progress-circular indeterminate color="primary" size="20" :width="1" class="mr-2" />
-                <span class="text-caption">Checking for {{ newUser }}'s link to become available...</span>
+                <span v-if="checking" class="text-caption animate__animated animate__fadeIn">Checking for {{ newUser }}'s link to become available...</span>
             </div>
             <div class="d-flex justify-center align-center" v-else-if="newUser">
                 <v-progress-circular :model-value="100" color="green" size="20" :width="2" class="mr-2" />
@@ -94,7 +94,7 @@ async function submit() {
                     attempts += 1
                     return response.ok || attempts > 30
                 } catch (e) {
-                    return e
+                    return false
                 }
             },
             async () => await new Promise(resolve => setTimeout(resolve, 10000))

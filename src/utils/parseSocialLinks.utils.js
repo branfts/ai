@@ -4,43 +4,50 @@ export default function parseSocialLinks(links) {
     const networks = [{
         slug: 'target',
         re: /^(https?:\/\/)?(www|goto\.)?target\.com\/.+$/,
-        icon: TargetIcon
+        icon: TargetIcon,
+        color: '#CC0000'
     },{
         slug: 'amazon',
         re: /^(https?:\/\/)?(www\.)?amazon\.com\/.+$/,
-        icon: AmazonIcon
+        icon: AmazonIcon,
+        color: '#FF9900'
     },{
         slug: 'cashapp',
         re: /^(https?:\/\/)?(www\.)?cash\.app\/.+$/,
-        icon: CashAppIcon
+        icon: CashAppIcon,
+        color: '#00C244'
     },{
         slug: 'onlyfans',
         re: /^(https?:\/\/)?(www\.)?onlyfans\.com\/.+$/,
-        icon: OnlyFansIcon
+        icon: OnlyFansIcon,
+        color: '#00AFF0'
     },{
         slug: 'linktree',
         re: /^(https?:\/\/)?(www\.)?linktr\.ee\/.+$/,
-        icon: LinktreeIcon
+        icon: LinktreeIcon,
+        color: '#43E55E'
     },{
         slug: 'instagram',
         re: /^(https?:\/\/)?(www\.)?instagram\.com\/.+$/,
-        icon: InstagramIcon
+        icon: InstagramIcon,
+        color: '#E4405F'
     },{
         slug: 'facebook',
         re: /^(https?:\/\/)?(www\.)?facebook\.com\/.+$/,
-        icon: FacebookIcon
+        icon: FacebookIcon,
+        color: '#0866FF'
     },{
         slug: 'threads',
         re: /^(https?:\/\/)?(www\.)?threads\.net\/.+$/,
-        icon: ThreadsIcon
+        icon: ThreadsIcon,
     },{
         slug: 'tiktok',
         re: /^(https?:\/\/)?(www\.)?tiktok\.com\/.+$/,
-        icon: TikTokIcon
+        icon: TikTokIcon,
     },{
         slug: 'twitter',
         re: /^(https?:\/\/)?(www\.)?x\.com\/.+$/,
-        icon: XIcon
+        icon: XIcon,
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
