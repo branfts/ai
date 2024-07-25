@@ -1,6 +1,6 @@
 <template>
     <v-container :class="smAndDown ? '' : 'd-flex'">
-        <v-tooltip :text="`${modelValue.toLocaleString()} click${modelValue > 1 ? 's' : ''}`" location="top">
+        <v-tooltip :text="tooltip" location="top" :disabled="!tooltip">
             <template v-slot:activator="{ props }">
                 <div v-bind="props" class="d-flex justify-center align-center">
                     <div v-if="title" class="text-caption font-weight-thin text-center" :class="smAndDown ? '' : 'mr-2'">{{ title }}</div>
@@ -39,12 +39,12 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 import Tick from "@pqina/flip"
 import "@pqina/flip/dist/flip.min.css"
-import { de } from 'vuetify/locale'
 
 const magnitude = ref()
 const { smAndDown } = useDisplay()
 const props = defineProps({
     title: String,
+    tooltip: String,
     modelValue: Number,
     density: String,
     size: {

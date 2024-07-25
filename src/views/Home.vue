@@ -1,5 +1,6 @@
 <template>
     <v-container fluid class="h-100 d-flex flex-column justify-center align-center">
+        <flip-board-counter class="justify-center animate__animated animate__fadeIn" title="total indexed users" :modelValue="store.stats?.totalIndexedUsers" />
         <v-card flat max-width="500" width="100%">
             <v-card-title>
                 A10x
@@ -54,6 +55,7 @@ import { until } from 'async'
 
 import LinkField from '@/components/LinkField.vue'
 import NameAutocompleteField from '@/components/NameAutocompleteField.vue'
+import FlipBoardCounter from '../components/FlipBoardCounter.vue'
 
 const emit = defineEmits(['error'])
 const { $api, $getHostForName } = getCurrentInstance().appContext.config.globalProperties

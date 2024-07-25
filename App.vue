@@ -60,12 +60,14 @@ import 'animate.css'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { ref, computed, provide, getCurrentInstance } from "vue"
 import { useDisplay } from 'vuetify/lib/framework.mjs'
+import { useAppStore } from '@/store/app'
 
 import { parseSocialLinks } from "./src/utils"
 
 const { MODE } = import.meta.env
 const { smAndDown } = useDisplay()
 const { $keycloak, $api } = getCurrentInstance().appContext.config.globalProperties
+const store = useAppStore()
 const build = ref()
 const snackbarDefault = {
     active: false,
@@ -136,9 +138,18 @@ async function doAuth(redirect) {
         }
     }
 }
+async function updateStats() {
+    if (store.stats.lastUpdate && store.stats.lastUpdate > Date.now() - 60 * 60000) {
+        console.log('Using cached stats')
+        return
+    }
+    store.stats = await $api.stats()
+    store.stats.lastUpdate = Date.now()
+}
 
 doAuth()
 checkBuild()
+updateStats()
 buildCheckIntervalId.value = setInterval(checkBuild, 60000)
 
 provide('parseSocialLinks', parseSocialLinks)
