@@ -20,17 +20,17 @@
                     <v-icon v-else-if="!editing[link.uuid]" icon="link" size="24"></v-icon>
                 </template>
                 <template v-slot:title="{ title }">
-                    <span v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</span>
+                    <div class="mt-1" v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</div>
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                     <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
-                    <div v-if="!editing[link.uuid]" class="d-flex">
+                    <div v-if="isAuthenticated && !editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
                     </div>
                 </template>
                 <!-- eslint-disable -->
-                <link-field v-if="editing[link.uuid]" :key="link.uuid" :link="link" @update="link => store.form.links[socialLinks.findIndex(l => l.url !== '' && l.url === link.url)] = link" @delete="editing[link.uuid] = false" />
+                <link-field v-if="isAuthenticated && editing[link.uuid]" :key="link.uuid" :link="link" @update="link => store.form.links[socialLinks.findIndex(l => l.url !== '' && l.url === link.url)] = link" @delete="editing[link.uuid] = false" />
             </v-list-item>
         </v-list>
         <v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%">
@@ -126,6 +126,7 @@ const qcLink = computed(() => `${window.location.origin}/u/${props.user.username
 const flip = ref()
 const timer = ref()
 const parseSocialLinks = inject('parseSocialLinks')
+const isAuthenticated = ref(false)
 
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
 const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
@@ -175,6 +176,7 @@ async function asyncInit() {
     qrcode.value = await QRCode.toDataURL(qcLink.value, { type: 'image/webp' })
     await $keycloak.value.isLoaded
     if ($keycloak.value.isAuthenticated) {
+        isAuthenticated.value = $keycloak.value.isAuthenticated
         nextTick(async () => analytics.value = await $api.analytics(props.auth, props.user.username))
     }
 }
