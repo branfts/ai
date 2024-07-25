@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon  } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon  } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -44,10 +44,17 @@ export default function parseSocialLinks(links) {
         slug: 'tiktok',
         re: /^(https?:\/\/)?(www\.)?tiktok\.com\/.+$/,
         icon: TikTokIcon,
+        colors: ['#ff0050', '#00f2ea'],
+        color: () => ['#ff0050', '#00f2ea'][Math.floor(Math.random() * 2)]
     },{
         slug: 'twitter',
         re: /^(https?:\/\/)?(www\.)?x\.com\/.+$/,
         icon: XIcon,
+    },{
+        slug: 'youtube',
+        re: /^(https?:\/\/)?(www\.)?youtube\.com\/.+$/,
+        icon: YouTubeIcon,
+        color: '#FF0000'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,

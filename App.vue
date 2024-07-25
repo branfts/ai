@@ -10,7 +10,7 @@
                 <component v-if="link.icon" :is="link.icon" />
                 <span v-else v-html="link.name"></span>
             </v-btn>
-            <div class="text-caption font-weight-light font-italic">build<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? build.slice(-5) : 'dev' }}</span></div>
+            <div v-if="!smAndDown" class="text-caption font-weight-light font-italic">build<span class="ml-1 font-weight-bold">{{ MODE === 'production' ? build.slice(-5) : 'dev' }}</span></div>
             <v-spacer></v-spacer>
             <v-btn v-show="!collapse" v-for="link of links.legal" :to="link.to" :href="link.href" variant="text" :size="smAndDown ? 'x-small' : 'small'" class="pa-0 mr-1 text-caption" :text="link.name" />
             <div v-show="!collapse && !smAndDown" class="mx-8 font-weight-light"><span style="font-family: sans-serif">©</span> 2024 June07</div>

@@ -14,7 +14,7 @@
         <v-list>
             <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
                 <template v-slot:prepend>
-                    <component v-if="link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${link.color}` : 'filter: grayscale(100%)'" />
+                    <component v-if="link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${typeof link.color === 'function' ? link.color() : link.color}` : 'filter: grayscale(100%)'" />
                     <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
                     <v-icon v-else-if="/mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\?[a-zA-Z0-9=&%+-]*)?/.test(link.url)" icon="mail" size="24"></v-icon>
                     <v-icon v-else icon="link" size="24"></v-icon>
@@ -35,8 +35,8 @@
                     <v-icon icon="close" size="x-small" @click="dialog = false"></v-icon>
                 </v-card-title>
                 <v-divider />
-                <v-card-text>
-                    <div class="d-flex align-center justify-center" style="width: 250px">
+                <v-card-text class="py-0">
+                    <div class="d-flex align-center justify-center" style="width: 200px">
                         <v-img :src="qrcode"></v-img>
                         <v-img src="/ai.logo.svg" width="35" class="qr-logo"></v-img>
                     </div>
@@ -52,13 +52,13 @@
                 </v-card-actions>
             </v-card>
             <v-card rounded="xl" class="my-1 pb-3">
-                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Binary</v-card-title>
+                <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Hex</v-card-title>
                 <v-card-subtitle>
-                    {{ binary }}
+                    {{ hex }}
                 </v-card-subtitle>
                 <v-card-actions>
-                    <v-btn variant="tonal" rounded size="small" @click="copyHandler('binary')" class="mr-4">copy to clipboard
-                        <v-tooltip v-model="tooltips['binary']" class="justify-center align-center" attach location="top">
+                    <v-btn variant="tonal" rounded size="small" @click="copyHandler('hex')" class="mr-4">copy to clipboard
+                        <v-tooltip v-model="tooltips['hex']" class="justify-center align-center" attach location="top">
                             <span class="text-caption font-weight-bold">Copied</span>
                         </v-tooltip>
                     </v-btn>
@@ -102,7 +102,7 @@ import FlipBoardClicks from '@/components/FlipBoardClicks.vue'
 const analytics = ref()
 const clipboard = inject('clipboard')
 const { $api, $keycloak, $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
-const binary = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(2)).join(' '))
+const hex = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(16)).join(' '))
 const dialog = ref(false)
 const { smAndDown } = useDisplay()
 const props = defineProps({
@@ -110,7 +110,7 @@ const props = defineProps({
     auth: Object
 })
 const tooltips = ref({
-    binary: false,
+    hex: false,
     qrcode: false,
     link: false
 })
@@ -152,8 +152,8 @@ function copyHandler(name) {
     tooltips.value[name] = true
     if (name === 'qrcode') {
         copyDataUrlToClipboard(qrcode.value)
-    } else if (name === 'binary') {
-        clipboard.copy(binary.value)
+    } else if (name === 'hex') {
+        clipboard.copy(hex.value)
     } else if (name === 'link') {
         clipboard.copy(qcLink.value)
     }
