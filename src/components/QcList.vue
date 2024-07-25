@@ -102,7 +102,7 @@ import FlipBoardClicks from '@/components/FlipBoardClicks.vue'
 const analytics = ref()
 const clipboard = inject('clipboard')
 const { $api, $keycloak, $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
-const hex = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(16)).join(' '))
+const hex = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(16)).join(''))
 const dialog = ref(false)
 const { smAndDown } = useDisplay()
 const props = defineProps({
