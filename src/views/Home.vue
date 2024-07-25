@@ -29,7 +29,7 @@
                 </div>
                 <v-btn class="text-center" variant="tonal" text="submit" :disabled="disabled" @click="submit" :loading="loading" />
             </v-card-actions>
-            <div class="d-flex justify-center align-center" v-if="loading || checking">
+            <div class="d-flex justify-center align-center" v-if="checking">
                 <v-progress-circular indeterminate color="primary" size="20" :width="1" class="mr-2" />
                 <span v-if="checking" class="text-caption animate__animated animate__fadeIn">Checking for {{ newUser }}'s link to become available...</span>
             </div>

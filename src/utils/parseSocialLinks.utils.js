@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon  } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon  } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -65,6 +65,11 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(www\.)?npmjs\.com\/.+$/,
         icon: NpmIcon,
         color: '#CB3837'
+    },{
+        slug: 'reddit',
+        re: /^(https?:\/\/)?(www\.)?reddit\.com\/.+$/,
+        icon: RedditIcon,
+        color: '#FF4500'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
