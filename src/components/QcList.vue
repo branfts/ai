@@ -3,7 +3,7 @@
         <v-card flat class="w-100">
             <v-card-title>
                 <div class="d-flex align-center justify-center">
-                    <div class="text-h6 text-center">{{ user?.username }}</div>
+                    <div class="text-h6 text-center pr-2">{{ user?.username }}</div>
                     <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
                 </div>
             </v-card-title>
@@ -12,20 +12,25 @@
             </v-card-subtitle>
         </v-card>
         <v-list>
-            <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="link.url" :title="link.title || link.url" :subtitle="link.subtitle" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
+            <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="!editing[link.uuid] ? link.url : undefined" :title="link.title || link.url" :subtitle="!editing[link.uuid] ? link.subtitle : undefined" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
                 <template v-slot:prepend>
-                    <component v-if="link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${typeof link.color === 'function' ? link.color() : link.color}` : 'filter: grayscale(100%)'" />
-                    <v-img style="border-radius: 25%" v-else-if="link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
-                    <v-icon v-else-if="/mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\?[a-zA-Z0-9=&%+-]*)?/.test(link.url)" icon="mail" size="24"></v-icon>
-                    <v-icon v-else icon="link" size="24"></v-icon>
+                    <component v-if="!editing[link.uuid] && link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${typeof link.color === 'function' ? link.color() : link.color}` : 'filter: grayscale(100%)'" />
+                    <v-img style="border-radius: 25%" v-else-if="!editing[link.uuid] && link.favicon" :src="link.favicon || link.svg" class="mr-2" width="24" height="24" />
+                    <v-icon v-else-if="!editing[link.uuid] && /mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\?[a-zA-Z0-9=&%+-]*)?/.test(link.url)" icon="mail" size="24"></v-icon>
+                    <v-icon v-else-if="!editing[link.uuid]" icon="link" size="24"></v-icon>
                 </template>
                 <template v-slot:title="{ title }">
-                    <span :class="smAndDown ? 'text-body-2' : ''">{{ title }}</span>
+                    <span v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</span>
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
-                    <flip-board-clicks :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" tooltip="clicks" :modelValue="link.clicks" v-if="link.clicks" />
+                    <div v-if="!editing[link.uuid]" class="d-flex">
+                        <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
+                    </div>
+                    <flip-board ref="flip" class="pa-0" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board-clicks :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" tooltip="clicks" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
                 </template>
+                <!-- eslint-disable -->
+                <link-field v-if="editing[link.uuid]" :key="link.uuid" :link="link" @update="link => store.form.links[socialLinks.findIndex(l => l.url !== '' && l.url === link.url)] = link" @delete="editing[link.uuid] = false" />
             </v-list-item>
         </v-list>
         <v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%">
@@ -98,7 +103,9 @@ import { v5 as uuidv5 } from 'uuid'
 
 import FlipBoard from '@/components/FlipBoard.vue'
 import FlipBoardClicks from '@/components/FlipBoardClicks.vue'
+import LinkField from './LinkField.vue'
 
+const editing = ref({})
 const analytics = ref()
 const clipboard = inject('clipboard')
 const { $api, $keycloak, $getRepoForName } = getCurrentInstance().appContext.config.globalProperties
@@ -124,6 +131,7 @@ const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }
 const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
     if (!analytics.value) return link
     link.uuid = uuidv5(link.url, uuidv5.URL)
+    editing.value[link.uuid] = false
     const matchingLinkClickAnalytics = analytics.value?.linkClicks && Object.entries(analytics.value.linkClicks).find(([key, value]) => link.uuid.includes(key))?.[1]
 
     if (matchingLinkClickAnalytics) {
