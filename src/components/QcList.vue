@@ -27,7 +27,7 @@
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
-                    <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
+                    <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 mr-4 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
                     <div v-if="isAuthenticated && !editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
                     </div>
