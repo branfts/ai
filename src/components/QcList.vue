@@ -20,7 +20,10 @@
                     <v-icon v-else-if="!editing[link.uuid]" icon="link" size="24"></v-icon>
                 </template>
                 <template v-slot:title="{ title }">
-                    <div class="mt-1" v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</div>
+                    <div v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ title.replace(/https:\/\//, '') }}</div>
+                </template>
+                <template v-slot:subtitle="{ subtitle }">
+                    <div class="mb-1" v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ subtitle }}</div>
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />

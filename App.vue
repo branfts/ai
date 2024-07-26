@@ -85,7 +85,7 @@ const links = computed(() => ({
     general: [
         { name: "Home", to: "/" },
         !$keycloak.value.isAuthenticated && { name: "Sign In", to: "/login" },
-        { name: "GitHub", href: "https://github.com/branfts/qc", target: "_blank", rel: "noopener", icon: GitHubIcon },
+        { name: "GitHub", href: "https://github.com/branfts/ai/discussions", target: "_blank", rel: "noopener", icon: GitHubIcon },
     ].filter(x => x),
     legal: [
         $keycloak.value.isAuthenticated && { name: "Sign Out", to: "/logout" },

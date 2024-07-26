@@ -12,15 +12,19 @@
                     <v-btn class="d-flex ml-auto justify-end" variant="text" density="compact" size="small" @click="deleteHandler" icon="cancel" />
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
-                    <v-text-field v-model="link.url" hide-details density="compact" label="url" variant="plain" readonly></v-text-field>
-                    <v-text-field v-model="link.title" hide-details density="compact" label="title" variant="plain"></v-text-field>
-                    <v-text-field v-model="link.subtitle" hide-details density="compact" label="subtitle" variant="plain"></v-text-field>
+                    <v-text-field v-model="link.url" hide-details density="compact" label="url" variant="plain" class="mt-2" :class="hovered.url ? 'active' : ''" @update:focused="focus => hovered.url = focus"></v-text-field>
+                    <v-text-field v-model="link.title" hide-details density="compact" label="title" variant="plain"  :class="hovered.title ? 'active' : ''"  @update:focused="focus => hovered.title = focus"></v-text-field>
+                    <v-text-field v-model="link.subtitle" hide-details density="compact" label="subtitle" variant="plain" :class="hovered.subtitle ? 'active' : ''"  @update:focused="focus => hovered.subtitle = focus"></v-text-field>
                 </v-expansion-panel-text>
             </v-expansion-panel>
         </v-expansion-panels>
     </div>
 </template>
 <style scoped>
+:deep() .v-input.v-text-field.active {
+    background: white !important;
+    border-radius: 12px !important;
+}
 :deep() .v-chip__content {
     width: 100%;
 }
@@ -37,6 +41,11 @@
 import { ref, onMounted, watch } from 'vue'
 import { isURL } from 'validator'
 
+const hovered = ref({
+    url: false,
+    title: false,
+    subtitle: false,
+})
 const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const panel = ref()
 const props = defineProps({
