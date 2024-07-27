@@ -31,11 +31,11 @@
             </v-card-actions>
             <div class="d-flex justify-center align-center" v-if="checking">
                 <v-progress-circular indeterminate color="primary" size="20" :width="1" class="mr-2" />
-                <span v-if="checking" class="text-caption animate__animated animate__fadeIn">Checking for {{ newUser }}'s link to become available...</span>
+                <span v-if="checking" class="text-caption animate__animated animate__fadeIn">Checking for {{ newUser }}'s index to become available...</span>
             </div>
             <div class="d-flex justify-center align-center" v-else-if="newUser">
                 <v-progress-circular :model-value="100" color="green" size="20" :width="2" class="mr-2" />
-                <router-link class="text-caption" :to="`/u/${newUser}`">{{ newUser }}'s link is ready</router-link>
+                <router-link class="text-caption" :to="`/u/${newUser}`">{{ newUser }}'s index is ready</router-link>
             </div>
         </v-card>
     </v-container>

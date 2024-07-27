@@ -224,7 +224,7 @@ function startTour() {
 
 asyncInit()
 onMounted(() => {
-    tour.value = tourInit(refs, smAndDown, offset, dialog, !store.tour.completed && !store.tour.canceled && route.query.tour)
+    tour.value = tourInit(refs, smAndDown, offset, dialog, !store.tour.completed && !store.tour.canceled || (!store.tour.completed && !store.tour.canceled && route.query.tour))
     tour.value.on('complete', () => {
         store.tour.completed = Date.now()
         gtag('event', 'qc_tour_complete')

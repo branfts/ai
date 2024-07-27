@@ -140,8 +140,10 @@ async function doAuth(redirect) {
 }
 async function updateStats() {
     if (store.stats.lastUpdate && store.stats.lastUpdate > Date.now() - 60 * 60000) {
-        console.log('Using cached stats')
-        return
+        if (MODE !== 'production') {
+            store.stats = await $api.stats()
+            return
+        }
     }
     store.stats = await $api.stats()
     store.stats.lastUpdate = Date.now()

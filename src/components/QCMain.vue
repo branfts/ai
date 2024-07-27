@@ -1,8 +1,13 @@
 <template>
-    <v-container fluid>
-        <qc-list v-if="user?.links" :user="user" :auth="auth" />
-        <span v-else>No data...</span>
-        <qc-form />
+    <v-container fluid class="h-100">
+        <qc-list v-if="user.links" :user="user" :auth="auth" />
+        <div class="h-100 d-flex align-center justify-center" v-else-if="loaded">
+            <v-img height="300" max-width="300" src="/greg-rosenke-4TpmzpI8Du0-unsplash.jpg" />
+            <span style="position: absolute; opacity: 0.2;" class="text-white text-h1">404</span>
+        </div>
+        <div v-else class="h-100 d-flex align-center justify-center">
+            <v-progress-circular :model-value="100" color="green" size="20" :width="2" class="mr-2" />
+        </div>
     </v-container>
 </template>
 <style scoped></style>
@@ -10,7 +15,6 @@
 import { ref, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 import QcList from './QcList.vue'
-import QcForm from './QcForm.vue'
 
 const { $getHostForName } = getCurrentInstance().appContext.config.globalProperties
 const route = useRoute()
@@ -18,6 +22,7 @@ const user = ref({})
 const props = defineProps({
     auth: Object
 })
+const loaded = ref(false)
 
 function isRuleActive(rule) {
     const now = new Date()
@@ -73,6 +78,8 @@ async function asyncInit() {
         user.value = { username, links, rules, ...user.value }
     } catch (error) {
         console.error(error)
+    } finally {
+        loaded.value = true
     }
 }
 asyncInit()

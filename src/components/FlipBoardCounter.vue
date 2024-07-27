@@ -45,7 +45,7 @@ const { smAndDown } = useDisplay()
 const props = defineProps({
     title: String,
     tooltip: String,
-    modelValue: Number,
+    modelValue: String,
     density: String,
     size: {
         type: Number,
@@ -58,7 +58,7 @@ const mutating = ref({
 })
 
 const formatedNumberWithMagnitude = computed(() => {
-    const number = props.modelValue
+    const number = Number(props.modelValue)
 
     if (!number) {
         magnitude.value = undefined

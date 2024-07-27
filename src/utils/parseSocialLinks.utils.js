@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon  } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon  } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -70,6 +70,26 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(www\.)?reddit\.com\/.+$/,
         icon: RedditIcon,
         color: '#FF4500'
+    },{
+        slug: 'googlemaps',
+        re: /^(https?:\/\/)?(www\.)?google\.com\/maps\/.+$/,
+        icon: GoogleMapsIcon,
+        color: '#4285F4'
+    },{
+        slug: 'linkedin',
+        re: /^(https?:\/\/)?(www\.)?linkedin\.com\/.+$/,
+        icon: LinkedInIcon,
+        color: '#0A66C2'
+    },{
+        slug: 'pinterest',
+        re: /^(https?:\/\/)?(www\.)?pinterest\.com\/.+$/,
+        icon: PinterestIcon,
+        color: '#BD081C'
+    },{
+        slug: 'spotify',
+        re: /^(https?:\/\/)?(www|open\.)?spotify\.com\/.+$/,
+        icon: SpotifyIcon,
+        color: '#1DB954'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
