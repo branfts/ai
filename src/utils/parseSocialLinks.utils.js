@@ -48,7 +48,7 @@ export default function parseSocialLinks(links) {
         color: () => ['#ff0050', '#00f2ea'][Math.floor(Math.random() * 2)]
     },{
         slug: 'twitter',
-        re: /^(https?:\/\/)?(www\.)?x\.com\/.+$/,
+        re: /^(https?:\/\/)?(www\.)?x|twitter\.com\/.+$/,
         icon: XIcon,
     },{
         slug: 'youtube',
@@ -98,6 +98,14 @@ export default function parseSocialLinks(links) {
         slug: 'beacons',
         re: /^(https?:\/\/)?(www\.)?beacons\.ai\/.+$/,
         svg: '/logos/beacons.svg'
+    },{
+        slug: 'introco',
+        re: /^(https?:\/\/)?(www\.)?intro\.co\/.+$/,
+        favicon: 'https://intro.co/intro-icon-32.png'
+    },{
+        slug: 'stanstore',
+        re: /^(https?:\/\/)?(www\.)?stan\.store\/.+$/,
+        favicon: 'https://stan.store/favicon.ico',
     }]
     const parsed = links.map(link => {
         const network = networks.find(network => network.re.test(link.url))
