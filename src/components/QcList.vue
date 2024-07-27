@@ -4,14 +4,15 @@
             <v-card-title>
                 <div class="d-flex align-center justify-center">
                     <div class="text-h6 text-center pr-2">{{ user?.username }}</div>
-                    <v-btn icon="share" variant="text" size="small" @click="dialog = true" :ripple="false" />
+                    <v-btn icon="share" ref="tourShareButtonRef" variant="text" size="small" @click="dialog = true" :ripple="false" />
                 </div>
             </v-card-title>
             <v-card-subtitle class="pa-0 mt-n4" :class="smAndDown ? 'text-center' : 'text-end'">
-                <v-btn class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
+                <v-btn ref="tourButtonRef" variant="text" size="small" @click="tour.start()" icon="info" />
+                <v-btn ref="tourGitButtonRef" class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
             </v-card-subtitle>
         </v-card>
-        <v-list>
+        <v-list ref="tourListRef">
             <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="!editing[link.uuid] ? link.url : undefined" :title="link.title || link.url" :subtitle="!editing[link.uuid] ? link.subtitle : undefined" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
                 <template v-slot:prepend>
                     <component v-if="!editing[link.uuid] && link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${typeof link.color === 'function' ? link.color() : link.color}` : 'filter: grayscale(100%)'" />
@@ -36,8 +37,8 @@
                 <link-field v-if="isAuthenticated && editing[link.uuid]" :key="link.uuid" :link="link" @update="link => store.form.links[socialLinks.findIndex(l => l.url !== '' && l.url === link.url)] = link" @delete="editing[link.uuid] = false" />
             </v-list-item>
         </v-list>
-        <v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%">
-            <v-card rounded="xl" class="my-1 pb-3">
+        <v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%" eager>
+            <v-card ref="tourShareQrcodeRef" rounded="xl" class="my-1 pb-3">
                 <v-card-title class="d-flex align-center text-body-1 font-weight-bold">QR Code
                     <v-spacer />
                     <v-icon icon="close" size="x-small" @click="dialog = false"></v-icon>
@@ -59,7 +60,7 @@
                     </v-btn>
                 </v-card-actions>
             </v-card>
-            <v-card rounded="xl" class="my-1 pb-3">
+            <v-card ref="tourShareHexRef" rounded="xl" class="my-1 pb-3">
                 <v-card-title class="d-flex align-center text-body-1 font-weight-bold">Hex</v-card-title>
                 <v-card-subtitle>
                     {{ hex }}
@@ -72,7 +73,7 @@
                     </v-btn>
                 </v-card-actions>
             </v-card>
-            <v-card rounded="xl" class="my-1 pb-3">
+            <v-card ref="tourShareUrlRef" rounded="xl" class="my-1 pb-3">
                 <v-card-title class="d-flex align-center text-body-1 font-weight-bold">URL</v-card-title>
                 <v-card-subtitle>
                     {{ qcLink }}
@@ -103,11 +104,32 @@ import { ref, computed, inject, onMounted, watch, getCurrentInstance, nextTick }
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 import { GitHubIcon } from 'vue3-simple-icons'
 import { v5 as uuidv5 } from 'uuid'
+import { offset } from '@floating-ui/dom'
+import { useRoute } from 'vue-router'
 
 import FlipBoard from '@/components/FlipBoard.vue'
 import FlipBoardCounter from '@/components/FlipBoardCounter.vue'
 import LinkField from './LinkField.vue'
+import { tourInit } from '@/utils/tour.utils.js'
 
+const route = useRoute()
+const tour = ref()
+const tourButtonRef = ref()
+const tourListRef = ref()
+const tourGitButtonRef = ref()
+const tourShareButtonRef = ref()
+const tourShareQrcodeRef = ref()
+const tourShareHexRef = ref()
+const tourShareUrlRef = ref()
+const refs = {
+    'tour-list': { index: 20, ref: tourListRef },
+    'tour-git-button': { index: 30, ref: tourGitButtonRef },
+    'tour-share-button': { index: 40, ref: tourShareButtonRef },
+    'tour-share-qrcode': { index: 50, ref: tourShareQrcodeRef },
+    'tour-share-hex': { index: 60, ref: tourShareHexRef },
+    'tour-share-url': { index: 70, ref: tourShareUrlRef },
+    'tour-button': { index: 100, ref: tourButtonRef },
+}
 const editing = ref({})
 const analytics = ref()
 const clipboard = inject('clipboard')
@@ -144,7 +166,7 @@ const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
         link.clicks = Number(matchingLinkClickAnalytics.count)
     }
     return link
-}).sort((a, b) => !a?.clicks || a.clicks > b.clicks ? 1 : -1))
+}).sort((a, b) => !a?.clicks || a.clicks < b.clicks ? 1 : -1))
 const qrcode = ref()
 const repo = $getRepoForName(props.user.username)
 
@@ -193,6 +215,7 @@ function downloadHandler() {
 
 asyncInit()
 onMounted(() => {
+    tour.value = tourInit(refs, smAndDown, offset, dialog, route.query.tour)
     watch(dialog, dialog => {
         if (!dialog) return
         if (!qrcode.value) {

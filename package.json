@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.6.8",
     "@pqina/flip": "^1.8.3",
     "animate.css": "^4.1.1",
     "async": "^3.2.5",
@@ -22,6 +23,7 @@
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.32",
     "vue-router": "^4.4.0",
+    "vue-shepherd": "^3.0.0",
     "vue-social-sharing": "^4.0.0-alpha4",
     "vue3-simple-icons": "^12.0.0",
     "vuetify": "^3.6.13"
