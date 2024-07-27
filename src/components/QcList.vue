@@ -8,7 +8,7 @@
                 </div>
             </v-card-title>
             <v-card-subtitle class="pa-0 mt-n4" :class="smAndDown ? 'text-center' : 'text-end'">
-                <v-btn ref="tourButtonRef" variant="text" size="small" @click="tour.start()" icon="info" />
+                <v-btn ref="tourButtonRef" variant="text" size="small" @click="startTour" icon="info_outline" color="grey-darken-2" />
                 <v-btn ref="tourGitButtonRef" class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
             </v-card-subtitle>
         </v-card>
@@ -106,6 +106,7 @@ import { GitHubIcon } from 'vue3-simple-icons'
 import { v5 as uuidv5 } from 'uuid'
 import { offset } from '@floating-ui/dom'
 import { useRoute } from 'vue-router'
+import { useAppStore } from '@/store/app'
 
 import FlipBoard from '@/components/FlipBoard.vue'
 import FlipBoardCounter from '@/components/FlipBoardCounter.vue'
@@ -137,6 +138,7 @@ const { $api, $keycloak, $getRepoForName } = getCurrentInstance().appContext.con
 const hex = computed(() => qcLink.value?.split('').map(x => x.charCodeAt(0).toString(16)).join(''))
 const dialog = ref(false)
 const { smAndDown } = useDisplay()
+const store = useAppStore()
 const props = defineProps({
     user: Object,
     auth: Object
@@ -212,10 +214,25 @@ function downloadHandler() {
     link.click()
     gtag('event', 'link_download')
 }
+function startTour() {
+    store.tour.completed = false
+    store.tour.canceled = false
+    store.tour.started = Date.now()
+    tour.value.start()
+    gtag('event', 'qc_tour_start')
+}
 
 asyncInit()
 onMounted(() => {
-    tour.value = tourInit(refs, smAndDown, offset, dialog, route.query.tour)
+    tour.value = tourInit(refs, smAndDown, offset, dialog, !store.tour.completed && !store.tour.canceled && route.query.tour)
+    tour.value.on('complete', () => {
+        store.tour.completed = Date.now()
+        gtag('event', 'qc_tour_complete')
+    })
+        .on('cancel', () => {
+            store.tour.canceled = Date.now()
+            gtag('event', 'qc_tour_canceled')
+        })
     watch(dialog, dialog => {
         if (!dialog) return
         if (!qrcode.value) {

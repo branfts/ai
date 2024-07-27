@@ -7,7 +7,7 @@ const reset = {
         links: [{
             url: ''
         }],
-        rules: [],
+        rules: []
     }
 }
 export const useAppStore = defineStore("app", {
@@ -16,12 +16,16 @@ export const useAppStore = defineStore("app", {
         analytics: {
         },
         form: JSON.parse(JSON.stringify(reset.form)),
-        stats: {}
+        stats: {},
+        tour: {
+            completed: undefined,
+            canceled: undefined
+        }
     }),
     actions: {
         resetForm(state) {
             state.form = JSON.parse(JSON.stringify(reset.form))
         },
     },
-    persist: true,
+    persist: true
 })

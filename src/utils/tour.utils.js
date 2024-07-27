@@ -2,7 +2,6 @@ import { useShepherd } from 'vue-shepherd'
 import 'shepherd.js/dist/css/shepherd.css'
 
 function tourInit(refs, smAndDown, offset, dialog, start) {
-    console.log(refs)
     const tour = useShepherd({
         useModalOverlay: true,
         defaultStepOptions: {
