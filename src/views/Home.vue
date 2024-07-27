@@ -69,6 +69,7 @@ const store = useAppStore()
 const links = computed(() => store.form.links)
 const disabled = computed(() => !props.auth?.token ||!store.form.name || !links.value.length)
 const inputLinkRef = ref()
+const linksLength = computed(() => links.value.length)
 
 async function submit() {
     loading.value = true
@@ -109,10 +110,10 @@ async function submit() {
     }
 }
 onMounted(() => {
-    watch(store.form.links, async (links, oldLinks) => {
-        if (links.length === oldLinks.length) return
-        await nextTick()
-        inputLinkRef.value[0].$el.querySelector('input').focus()
+    watch(() => linksLength.value, () => {
+        nextTick(() => {
+            inputLinkRef.value[0].$el.querySelector('input').focus()
+        })
     })
 })
 </script>
