@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon  } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon, DiscordIcon, KofiIcon, EtsyIcon, TwitchIcon, BitlyIcon  } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -90,6 +90,31 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(www|open\.)?spotify\.com\/.+$/,
         icon: SpotifyIcon,
         color: '#1DB954'
+    },{
+        slug: 'discord',
+        re: /^(https?:\/\/)?(www\.)?discord\.gg\/.+$/,
+        icon: DiscordIcon,
+        color: '#5865F2'
+    },{
+        slug: 'kofi',
+        re: /^(https?:\/\/)?(www\.)?ko-fi\.com\/.+$/,
+        icon: KofiIcon,
+        color: '#FF5E5B'
+    },{
+        slug: 'etsy',
+        re: /^(https?:\/\/)?(www\.)?etsy\.com\/.+$/,
+        icon: EtsyIcon,
+        color: '#F16521'
+    },{
+        slug: 'twitch',
+        re: /^(https?:\/\/)?(www\.)?twitch\.tv\/.+$/,
+        icon: TwitchIcon,
+        color: '#9146FF'
+    },{
+        slug: 'bitly',
+        re: /^(https?:\/\/)?(www\.)?bit\.ly\/.+$/,
+        icon: BitlyIcon,
+        color: '#EE6123'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
