@@ -33,11 +33,8 @@ jobs:
 
       - name: Sync with Template
         run: |
-          # Checkout the main branch
-          git checkout main
-
-          git checkout --ours CNAME
-          git checkout --ours public/u
+          echo "CNAME merge = ours" > .gitattributes
+          echo "public/u/* merge=ours" >> .gitattributes
 
           # Merge changes from the template repo
           git merge template/main --allow-unrelated-histories --strategy-option theirs
