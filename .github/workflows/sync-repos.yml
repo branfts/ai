@@ -28,6 +28,7 @@ jobs:
           # Authenticate with GitHub CLI
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
+          git config pull.rebase false
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
 
@@ -52,7 +53,7 @@ jobs:
             git pull template main
 
             # Merge changes from the template repo
-            git merge template/main --no-rebase --allow-unrelated-histories --strategy-option theirs
+            git merge template/main --allow-unrelated-histories --strategy-option theirs
 
             # Commit and push changes
             git add .
