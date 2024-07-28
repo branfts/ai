@@ -50,15 +50,20 @@ jobs:
             git checkout --ours CNAME
             git checkout --ours public/u
 
+            git status
+            echo "HERE 0"
             # Merge changes from the template repo
             git merge template/main --allow-unrelated-histories --strategy-option theirs
 
+            echo "HERE 1"
             # Commit and push changes
             git add .
+            git status
+            echo "HERE 2"
             git commit -m "Sync with template repository"
-
+            echo "HERE 3"
             if [[ "$REPO" == "ai-00" ]]; then
-              echo "Pusing $REPO main branch..."
+              echo "Pushing $REPO main branch..."
               git push origin main
             fi
 
