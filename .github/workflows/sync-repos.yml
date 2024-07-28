@@ -52,7 +52,7 @@ jobs:
             git pull template main
 
             # Merge changes from the template repo
-            git merge template/main --allow-unrelated-histories --strategy-option theirs
+            git merge template/main --no-rebase --allow-unrelated-histories --strategy-option theirs
 
             # Commit and push changes
             git add .
