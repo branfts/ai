@@ -58,6 +58,7 @@ jobs:
             git commit -m "Sync with template repository"
 
             if [[ "$REPO" == "ai-00" ]]; then
+              echo "Pusing $REPO main branch..."
               git push origin main
             fi
 
