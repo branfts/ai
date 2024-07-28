@@ -33,7 +33,7 @@ jobs:
 
       - name: Sync with Template
         run: |
-          echo "CNAME merge = ours" > .gitattributes
+          echo "CNAME merge=ours" > .gitattributes
           echo "public/u/* merge=ours" >> .gitattributes
 
           # Merge changes from the template repo
