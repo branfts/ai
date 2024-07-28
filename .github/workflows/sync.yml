@@ -24,9 +24,6 @@ jobs:
 
       - name: Add Template Repo
         run: |
-          # Create and checkout a new branch
-          git checkout -b temp-branch
-
           # Add the template repo as a remote
           git remote add template https://github.com/branfts/ai.git
           git fetch template
