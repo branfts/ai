@@ -1,0 +1,48 @@
+name: Sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    if: github.repository != 'branfts/ai'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Template Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          # Install git
+          sudo apt-get install git
+
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+      - name: Add Template Repo
+        run: |
+          # Create and checkout a new branch
+          git checkout -b temp-branch
+
+          # Add the template repo as a remote
+          git remote add template https://github.com/branfts/ai.git
+          git fetch template
+
+      - name: Sync with Template
+        run: |
+          # Checkout the main branch
+          git checkout main
+
+          git checkout --ours CNAME
+          git checkout --ours public/u
+
+          # Merge changes from the template repo
+          git merge template/main --allow-unrelated-histories --strategy-option theirs
+
+          # Commit and push changes
+          git add .
+          git commit -m "Sync with template repository"
+          git push origin main
