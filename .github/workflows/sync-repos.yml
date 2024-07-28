@@ -48,7 +48,7 @@ jobs:
             git checkout main
 
             git checkout --ours CNAME
-            git checkout --ours public
+            git checkout --ours public/u/
 
             # Merge changes from the template repo
             git merge template/main --allow-unrelated-histories --strategy-option theirs
@@ -57,7 +57,7 @@ jobs:
             git add .
             git commit -m "Sync with template repository"
 
-            if [ "$REPO" == "ai-01" ]; then
+            if [ "$REPO" == "ai-00" ]; then
               git push origin main
             fi
 
