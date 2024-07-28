@@ -28,7 +28,6 @@ jobs:
           # Authenticate with GitHub CLI
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-          git config --global pull.rebase false
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
 
@@ -41,16 +40,15 @@ jobs:
             gh repo clone branfts/$REPO -- --depth 1
             cd $REPO
 
-            # Checkout the main branch
-            git checkout -b temp-branch
-
             # Add the template repo as a remote
             git remote add template https://github.com/branfts/ai.git
             git fetch template
 
+            # Checkout the main branch
+            git checkout main
+
             git checkout --ours CNAME
-            git checkout --ours public/u/
-            git pull template main
+            git checkout --ours public/u
 
             # Merge changes from the template repo
             git merge template/main --allow-unrelated-histories --strategy-option theirs
