@@ -20,10 +20,7 @@ jobs:
       - name: Get approval status
         uses: actions/github-script@v6
         with:
-          script: |
-            console.log(process.env)
-            console.log('github.............', ${{ github }})
-            
+          script: |            
             const pull_number = context.issue.number;
             if (!pull_number) {
               throw new Error('Pull request number is not available');
