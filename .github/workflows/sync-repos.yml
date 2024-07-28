@@ -34,7 +34,7 @@ jobs:
           # Sync each repo
           for REPO in $REPOS; do
             echo "Syncing $REPO..."
-            gh repo clone branfts/$REPO --depth 1
+            gh repo clone branfts/$REPO -- --depth 1
             cd $REPO
 
             # Add the template repo as a remote
