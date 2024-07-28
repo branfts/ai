@@ -40,15 +40,16 @@ jobs:
             gh repo clone branfts/$REPO -- --depth 1
             cd $REPO
 
+            # Checkout the main branch
+            git checkout -b temp-branch
+
             # Add the template repo as a remote
             git remote add template https://github.com/branfts/ai.git
             git fetch template
 
-            # Checkout the main branch
-            git checkout main
-
             git checkout --ours CNAME
             git checkout --ours public/u/
+            git pull template main
 
             # Merge changes from the template repo
             git merge template/main --allow-unrelated-histories --strategy-option theirs
@@ -57,7 +58,6 @@ jobs:
             git add .
             git commit -m "Sync with template repository"
 
-            echo $REPO
             if [[ "$REPO" == "ai-00" ]]; then
               git push origin main
             fi
