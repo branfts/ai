@@ -8,6 +8,7 @@ on:
 
 jobs:
   trigger:
+    permissions: write-all
     if: github.repository == 'branfts/ai'
     runs-on: ubuntu-latest
 
