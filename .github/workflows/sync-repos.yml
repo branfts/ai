@@ -46,16 +46,12 @@ jobs:
 
             # Checkout the main branch
             git checkout main
+            
+            git checkout --ours CNAME
+            git checkout --ours public
 
             # Merge changes from the template repo
             git merge template/main --allow-unrelated-histories
-
-            # Remove the /public/u directory if it exists
-            if [ -d "public/u" ]; then
-              echo "Removing /public/u directory from $REPO"
-              git rm -r --cached public/u
-              rm -rf public/u
-            fi
 
             # Commit and push changes
             git add .
