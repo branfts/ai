@@ -11,6 +11,9 @@
                 <v-btn ref="tourButtonRef" variant="text" size="small" @click="startTour" icon="info_outline" color="grey-darken-2" />
                 <v-btn ref="tourGitButtonRef" class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
             </v-card-subtitle>
+            <v-card-text>
+                <flip-board ref="flip" class="d-flex justify-center pa-0" title="Redirecting" tooltipLocation="bottom" v-model="timer" :paused="hovered.flipboard || dialog" :timeout="linkRedirectRule.timeout" v-if="linkRedirectRule?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+            </v-card-text>
         </v-card>
         <v-list ref="tourListRef">
             <v-list-item :id="`u.${user.username} ${link.uuid}`" v-for="(link, i) in socialLinks" :key="i" :href="!editing[link.uuid] ? link.url : undefined" :title="link.title || link.url" :subtitle="!editing[link.uuid] ? link.subtitle : undefined" @mouseenter="hovered[i] = true" @mouseleave="hovered[i] = false" @focus="hovered[i] = true" @blur="hovered[i] = false" tabindex="0" :class="smAndDown ? 'pa-0' : ''">
@@ -27,7 +30,7 @@
                     <div class="mb-1" v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ subtitle }}</div>
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="link.redirect.timeout" v-if="!editing[link.uuid] && link.redirect?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="linkRedirectRule.timeout" v-if="!editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                     <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 mr-4 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
                     <div v-if="isAuthenticated && !editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
@@ -149,13 +152,33 @@ const tooltips = ref({
     link: false
 })
 const links = computed(() => props.user?.links)
+const rules = computed(() => props.user?.rules)
 const qcLink = computed(() => `${window.location.origin}/u/${props.user.username}`)
 const flip = ref()
 const timer = ref()
 const parseSocialLinks = inject('parseSocialLinks')
 const isAuthenticated = ref(false)
+const linkRedirectRule = computed(() => {
+    const { referrer } = route.query
 
-const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), {}) || {})
+    // Filter rules based on referrer if it exists, otherwise use all rules
+    const filteredRules = referrer
+        ? rules.value.filter(rule => rule.name === 'redirect' && rule.referrer === referrer)
+        : rules.value.filter(rule => rule.name === 'redirect')
+
+    // Find the rule with the lowest priority
+    const lowestPriorityRedirectRule = filteredRules.reduce((lowest, current) => {
+        return (lowest === null || current.priority < lowest.priority)
+            ? current
+            : lowest
+    }, null)
+
+    // Return the rule with the lowest priority or undefined if no rule is found
+    console.log(lowestPriorityRedirectRule)
+    return lowestPriorityRedirectRule
+})
+
+const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), { flipboard: false }) || { flipboard: false })
 const socialLinks = computed(() => parseSocialLinks(links.value)?.map(link => {
     // hack fix for old syntax
     link.href && !link.url && (link.url = link.href)
@@ -242,7 +265,7 @@ onMounted(() => {
     })
     watch(timer, timer => {
         if (timer !== undefined && timer < 0) {
-            window.location.href = socialLinks.value.find(link => link.redirect).url
+            window.location.href = linkRedirectRule.value.url
         }
     })
 })

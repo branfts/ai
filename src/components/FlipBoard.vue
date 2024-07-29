@@ -1,5 +1,5 @@
 <template>
-    <v-tooltip :text="hardPaused ? 'Resume' : 'Pause'" location="left" close-delay="2500" @click.prevent="hardPaused = !hardPaused">
+    <v-tooltip :text="hardPaused ? 'Resume' : 'Pause'" :location="tooltipLocation" close-delay="2500" @click.prevent="hardPaused = !hardPaused">
         <template v-slot:activator="{ props: tooltip }">
             <v-container v-bind="{ ...$attrs, ...tooltip }" :class="smAndDown ? '' : 'd-flex'">
                 <div v-if="title" class="text-caption font-weight-thin text-center" :class="smAndDown ? '' : 'mr-2'">{{ hardPaused ? 'paused' : title }}</div>
@@ -52,6 +52,10 @@ const props = defineProps({
     size: {
         type: Number,
         default: 1,
+    },
+    tooltipLocation: {
+        type: String,
+        default: 'left'
     }
 })
 const tickRef = ref()
