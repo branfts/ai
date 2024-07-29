@@ -163,7 +163,10 @@ const linkRedirectRule = computed(() => {
 
     // Filter rules based on referrer if it exists, otherwise use all rules
     const filteredRules = referrer
-        ? rules.value.filter(rule => rule.name === 'redirect' && rule.referrer === referrer)
+        ? [
+            ...rules.value.filter(rule => rule.name === 'redirect' && rule.referrer === referrer),
+            ...rules.value.filter(rule => rule.name === 'redirect' && !rule.referrer)
+        ]
         : rules.value.filter(rule => rule.name === 'redirect')
 
     // Find the rule with the lowest priority
