@@ -180,7 +180,7 @@ const linkRedirectRule = computed(() => {
     
     return {
         ...lowestPriorityRedirectRule,
-        notIndexed: !links.value.find(link => link.url === lowestPriorityRedirectRule.url)
+        notIndexed: !links.value.find(link => link.url === lowestPriorityRedirectRule?.url)
     }
 })
 

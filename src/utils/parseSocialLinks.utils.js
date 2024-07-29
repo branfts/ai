@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon, DiscordIcon, KofiIcon, EtsyIcon, TwitchIcon, BitlyIcon  } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon, DiscordIcon, KofiIcon, EtsyIcon, TwitchIcon, BitlyIcon, CanvaIcon, GoDaddyIcon } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -115,6 +115,16 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(www\.)?bit\.ly\/.+$/,
         icon: BitlyIcon,
         color: '#EE6123'
+    },{
+        slug: 'canva',
+        re: /^(https?:\/\/)?(.*)?(www|my\.)?canva\.(com|site)\/.+$/,
+        icon: CanvaIcon,
+        color: '#00C4CC'
+    },{
+        slug: 'godaddy',
+        re: /^(https?:\/\/)?(.*\.)?(godaddy|godaddysites)\.com(\/*.+)?$/,
+        icon: GoDaddyIcon,
+        color: '#1BDBDB'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
