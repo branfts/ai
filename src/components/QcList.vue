@@ -12,7 +12,7 @@
                 <v-btn ref="tourGitButtonRef" class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
             </v-card-subtitle>
             <v-card-text>
-                <flip-board ref="flip" class="d-flex justify-center pa-0" title="Redirecting" tooltipLocation="bottom" v-model="timer" :paused="hovered.flipboard || dialog" :timeout="linkRedirectRule.timeout" v-if="linkRedirectRule?.timeout && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                <flip-board ref="flip" class="d-flex justify-center pa-0" title="Redirecting" tooltipLocation="bottom" v-model="timer" :paused="hovered.flipboard || dialog" :timeout="linkRedirectRule.timeout" v-if="linkRedirectRule?.timeout && linkRedirectRule.notIndexed && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
             </v-card-text>
         </v-card>
         <v-list ref="tourListRef">
@@ -31,7 +31,7 @@
                 </template>
                 <template v-slot:append>
                     <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="linkRedirectRule.timeout" v-if="!editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
-                    <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 mr-4 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="link.clicks" v-if="!editing[link.uuid] && link.clicks" />
+                    <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 mr-4 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="`${link.clicks}`" v-if="!editing[link.uuid] && link.clicks" />
                     <div v-if="isAuthenticated && !editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
                     </div>
@@ -174,8 +174,11 @@ const linkRedirectRule = computed(() => {
     }, null)
 
     // Return the rule with the lowest priority or undefined if no rule is found
-    console.log(lowestPriorityRedirectRule)
-    return lowestPriorityRedirectRule
+    
+    return {
+        ...lowestPriorityRedirectRule,
+        notIndexed: !links.value.find(link => link.url === lowestPriorityRedirectRule.url)
+    }
 })
 
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), { flipboard: false }) || { flipboard: false })
