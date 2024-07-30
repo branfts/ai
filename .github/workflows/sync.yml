@@ -39,6 +39,12 @@ jobs:
           # Commit and push changes
           git add .
           git commit -m "Sync with template repository"
-          git push origin main
           
-          # test comment
+      - name: Push to temp-branch and Create PR
+        run: |
+          # Push changes to a temporary branch
+          git checkout -b sync-temp-branch
+          git push origin sync-temp-branch
+
+          # Create a pull request
+          gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."

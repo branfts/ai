@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="h-100 d-flex flex-column justify-center align-center">
-        <flip-board-counter class="justify-center animate__animated animate__fadeIn" title="total indexed users" :modelValue="`${store.stats?.totalIndexedUsers}`" />
+        <flip-board-counter class="justify-center animate__animated animate__fadeIn" title="total indexed users" :modelValue="store.stats?.totalIndexedUsers" />
         <v-card flat max-width="500" width="100%">
             <v-card-title>
                 A10x
@@ -112,8 +112,8 @@ async function submit() {
 onMounted(() => {
     watch(() => linksLength.value, () => {
         nextTick(() => {
-            inputLinkRef.value[0].$el.querySelector('input').focus()
+            inputLinkRef.value?.[0].$el.querySelector('input').focus()
         })
-    })
+    }, { deep: true })
 })
 </script>
