@@ -18,6 +18,8 @@ jobs:
       - name: Authenticate with GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-      - name: Auto Approve PR
+      - name: Auto Approve and Merge PR
         run: |
           gh pr review ${{ github.event.pull_request.number }} --approve --body "Automatically approved by GitHub Actions"
+          gh pr merge ${{ github.event.pull_request.number }} --merge --body "Automatically merged by GitHub Actions"
+
