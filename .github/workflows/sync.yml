@@ -47,4 +47,6 @@ jobs:
           git push origin sync-temp-branch
           
           gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
+
+          # test comment
           
