@@ -2,11 +2,11 @@ name: Deploy static content to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ['main']
+    branches: ["main"]
     paths:
-      - 'src/**'
-      - 'public/**'
-      - 'index.html'
+      - "src/**"
+      - "public/**"
+      - "index.html"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,7 +19,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: 'deploy-pages'
+  group: "deploy-pages"
   cancel-in-progress: true
 
 jobs:
@@ -32,32 +32,62 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check for Added Files
+        id: check_files
+        run: |
+          # Get the list of files changed in the push
+          CHANGED_FILES=$(git diff --name-status HEAD~1 HEAD)
+
+          # Initialize a flag to determine if any files are added or changed
+          FILES_CHANGED=false
+
+          # Check if any files are added or changed
+          echo "$CHANGED_FILES" | while read status file; do
+            if [[ "$status" == "A" || "$status" == "M" ]]; then
+              FILES_CHANGED=true
+              break
+            fi
+          done
+
+          # Set an output variable to indicate if files are added or changed
+          if [ "$FILES_CHANGED" = false ]; then
+            exit 0
+          fi
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
+
       - name: Install dependencies
         run: npm install
+
       - name: Build
         run: npm run build
+
       - name: Generate Build Info
         run: |
           sudo apt-get install jq
           echo "{ \"build_date\": \"$(date)\", \"commit_sha\": \"$GITHUB_SHA\" }" | jq . > dist/build-info.json
           cp dist/index.html dist/404.html
+
       - name: Generate Index
         run: |
           if [ -d dist/u ]; then
             for file in `ls dist/u/*.js`; do basename -s .js $file; done | jq -R . | jq -cs . > dist/u/index.json
           fi
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload dist repository
-          path: './dist'
+          path: "./dist"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
