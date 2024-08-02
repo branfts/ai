@@ -34,7 +34,7 @@ jobs:
           echo "public/u/* merge=ours" >> .gitattributes
 
           # Merge changes from the template repo
-          git merge template/main --allow-unrelated-histories --strategy-option theirs --path-glob=**/* .github/workflows/**/*
+          git merge template/main --allow-unrelated-histories --strategy-option theirs
 
           # Commit and push changes
           git add .
@@ -48,10 +48,15 @@ jobs:
 
       - name: Push to temp-branch and Create PR
         run: |
-          git checkout -b sync-temp-branch
+          git checkout main
+
+          # Push changes to a temporary branch
+          git switch --create sync-temp-branch
+
+          git add .
+          git commit -m "Sync with template repository"
+
           git push origin sync-temp-branch
 
           # Create a pull request
           gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
-
-        # test comment
