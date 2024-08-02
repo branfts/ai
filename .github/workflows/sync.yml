@@ -48,10 +48,7 @@ jobs:
 
       - name: Push to temp-branch and Create PR
         run: |
-          # Push changes to a temporary branch
-          git checkout -b sync-temp-branch
-
           # Create a pull request
-          gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
+          gh pr create --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
           
-          # test comment 2
+          # test comment 3
