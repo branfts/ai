@@ -6,7 +6,7 @@ on:
 
 jobs:
   auto-approve:
-    if: github.repository == 'branfts/ai'
+    if: github.repository != 'branfts/ai'
     runs-on: ubuntu-latest
 
     steps:
