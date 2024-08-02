@@ -49,4 +49,4 @@ jobs:
 
           gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
 
-          # test comment 3
+          # test comment 4
