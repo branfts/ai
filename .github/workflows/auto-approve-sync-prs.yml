@@ -41,8 +41,10 @@ jobs:
             exit 0
           fi
 
-      - name: Auto Approve and Merge PR
+      - name: Auto Approve, Merge PR, and Delete Temporary Branch
         if: steps.check_conditions.outcome == 'success'
         run: |
           gh pr review ${{ github.event.pull_request.number }} --approve --body "Automatically approved by GitHub Actions"
           gh pr merge ${{ github.event.pull_request.number }} --merge --body "Automatically merged by GitHub Actions"
+          branch_name=$(gh pr view ${{ github.event.pull_request.number }} --json headRefName --jq .headRefName)
+          gh repo delete-branch $branch_name --confirm
