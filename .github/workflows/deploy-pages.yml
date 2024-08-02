@@ -33,28 +33,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check for Added Files
-        id: check_files
-        run: |
-          # Get the list of files changed in the push
-          CHANGED_FILES=$(git diff --name-status HEAD~1 HEAD)
-
-          # Initialize a flag to determine if any files are added or changed
-          FILES_CHANGED=false
-
-          # Check if any files are added or changed
-          echo "$CHANGED_FILES" | while read status file; do
-            if [[ "$status" == "A" || "$status" == "M" ]]; then
-              FILES_CHANGED=true
-              break
-            fi
-          done
-
-          # Set an output variable to indicate if files are added or changed
-          if [ "$FILES_CHANGED" = false ]; then
-            exit 0
-          fi
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
