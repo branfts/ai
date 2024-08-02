@@ -13,11 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI
-        run: |
-          sudo apt-get install gh
+      - name: Set up GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Authenticate with GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Auto Approve PR
         run: |
-          gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
           gh pr review ${{ github.event.pull_request.number }} --approve --body "Automatically approved by GitHub Actions"
