@@ -51,4 +51,4 @@ jobs:
           # Create a pull request
           gh pr create --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
           
-          # test comment 3
+          # test comment 4
