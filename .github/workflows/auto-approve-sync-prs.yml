@@ -1,0 +1,23 @@
+name: Auto-Approve Sync PRs
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  auto-approve:
+    if: github.repository == 'branfts/ai'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get install gh
+
+      - name: Auto Approve PR
+        run: |
+          gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
+          gh pr review ${{ github.event.pull_request.number }} --approve --body "Automatically approved by GitHub Actions"
