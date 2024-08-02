@@ -54,4 +54,4 @@ jobs:
           git checkout sync-temp-branch
           gh pr create --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
           
-          # test comment 4
+          # test comment 5
