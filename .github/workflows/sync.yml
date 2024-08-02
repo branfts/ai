@@ -17,10 +17,13 @@ jobs:
       - name: Setup Git
         run: |
           # Install git
-          sudo apt-get install git
+          sudo apt-get install git gh
 
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
+
+      - name: Authenticate with GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Add Template Repo
         run: |
@@ -30,7 +33,7 @@ jobs:
 
       - name: Sync with Template
         run: |
-          git branch -c sync-temp-branch
+          git checkout -b sync-temp-branch
 
           echo "CNAME merge=ours" > .gitattributes
           echo "public/u/* merge=ours" >> .gitattributes
@@ -41,17 +44,7 @@ jobs:
           # Commit and push changes
           git add .
           git commit -m "Sync with template repository"
-          git push --force
+          git push origin sync-temp-branch
           
-      - name: Set up GitHub CLI
-        run: sudo apt-get install gh
-
-      - name: Authenticate with GitHub CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-
-      - name: Push to temp-branch and Create PR
-        run: |
-          git checkout sync-temp-branch
-          gh pr create --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
+          gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
           
-          # test comment 5
