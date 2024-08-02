@@ -1,4 +1,4 @@
-name: Sync
+name: Sync With Template Repo
 
 on:
   workflow_dispatch:
@@ -34,7 +34,8 @@ jobs:
 
       - name: Sync with Template
         run: |
-          git checkout -b sync-temp-branch
+          temp_branch_name="sync-temp-$(date +%Y%m%d%H%M%S)"
+          git checkout -b $temp_branch_name
 
           echo "CNAME merge=ours" > .gitattributes
           echo "public/u/* merge=ours" >> .gitattributes
@@ -45,8 +46,8 @@ jobs:
           # Commit and push changes
           git add .
           git commit -m "Sync with template repository"
-          git push origin sync-temp-branch
+          git push origin $temp_branch_name
 
-          gh pr create --base main --head sync-temp-branch --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
+          gh pr create --base main --head $temp_branch_name --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
 
           # test comment 7
