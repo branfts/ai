@@ -30,6 +30,8 @@ jobs:
 
       - name: Sync with Template
         run: |
+          git branch -c sync-temp-branch
+
           echo "CNAME merge=ours" > .gitattributes
           echo "public/u/* merge=ours" >> .gitattributes
 
@@ -39,6 +41,7 @@ jobs:
           # Commit and push changes
           git add .
           git commit -m "Sync with template repository"
+          git push --force
           
       - name: Set up GitHub CLI
         run: sudo apt-get install gh
@@ -48,7 +51,7 @@ jobs:
 
       - name: Push to temp-branch and Create PR
         run: |
-          # Create a pull request
+          git checkout sync-temp-branch
           gh pr create --title "Sync with template repository" --body "This PR synchronizes the repository with the template repository."
           
           # test comment 4
