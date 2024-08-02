@@ -27,6 +27,6 @@ jobs:
           for REPO in $DERIVED_REPOS; do
             echo "Triggering sync in $REPO..."
             if [[ $REPO == 'ai-00' ]]; then
-              gh workflow run sync.yml --repo branfts/$REPO
+              gh workflow run sync-with-template-repo.yml --repo branfts/$REPO
             fi
           done
