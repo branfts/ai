@@ -82,7 +82,7 @@ export default function parseSocialLinks(links) {
         color: '#0A66C2'
     },{
         slug: 'pinterest',
-        re: /^(https?:\/\/)?(www\.)?pinterest\.com\/.+$/,
+        re: /^(https?:\/\/)?(www\.)?pinterest\.com|ca\/.+$/,
         icon: PinterestIcon,
         color: '#BD081C'
     },{
