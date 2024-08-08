@@ -1,4 +1,4 @@
-import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon, DiscordIcon, KofiIcon, EtsyIcon, TwitchIcon, BitlyIcon, CanvaIcon, GoDaddyIcon } from 'vue3-simple-icons'
+import { FacebookIcon, InstagramIcon, ThreadsIcon, TikTokIcon, OnlyFansIcon, XIcon, LinktreeIcon, TargetIcon, AmazonIcon, CashAppIcon, YouTubeIcon, GitHubIcon, NpmIcon, RedditIcon, GoogleMapsIcon, PinterestIcon, SpotifyIcon, LinkedInIcon, DiscordIcon, KofiIcon, EtsyIcon, TwitchIcon, BitlyIcon, CanvaIcon, GoDaddyIcon, BitcoinIcon, EthereumIcon, NearIcon } from 'vue3-simple-icons'
 
 export default function parseSocialLinks(links) {
     const networks = [{
@@ -125,6 +125,24 @@ export default function parseSocialLinks(links) {
         re: /^(https?:\/\/)?(.*\.)?(godaddy|godaddysites)\.com(\/*.+)?$/,
         icon: GoDaddyIcon,
         color: '#1BDBDB'
+    },{
+        slug: 'bitcoin',
+        re: /btc.address/,
+        icon: BitcoinIcon,
+        color: '#F7931A'
+    },{
+        slug: 'ethereum',
+        re: /eth.address/,
+        icon: EthereumIcon,
+        color: '#3C3C3D'
+    },{
+        slug: 'near',
+        re: /near.address/,
+        icon: NearIcon,
+    },{
+        slug: 'tron',
+        re: /trx.address/,
+        svg: '/logos/tron-trx-logo.svg'
     },{
         slug: 'throne',
         re: /^(https?:\/\/)?(www\.)?throne\.com\/.+$/,
