@@ -165,19 +165,23 @@ const linkRedirectRule = computed(() => {
     const filteredRules = referrer
         ? [
             ...rules.value.filter(rule => rule.name === 'redirect' && rule.referrer === referrer),
-            ...rules.value.filter(rule => rule.name === 'redirect' && !rule.referrer)
         ]
-        : rules.value.filter(rule => rule.name === 'redirect')
+        : rules.value.filter(rule => rule.name === 'redirect' && !rule.referrer)
 
+    console.log(filteredRules)
     // Find the rule with the lowest priority
     const lowestPriorityRedirectRule = filteredRules.reduce((lowest, current) => {
-        return (lowest === null || current.priority < lowest.priority)
-            ? current
-            : lowest
+        if (lowest === null || current.priority === lowest.priority) {
+            return Math.random() < 0.5 ? current : lowest
+        } else if (lowest === null || current.priority < lowest.priority) {
+            return current
+        } else {
+            return lowest
+        }
     }, null)
 
     // Return the rule with the lowest priority or undefined if no rule is found
-    
+
     return {
         ...lowestPriorityRedirectRule,
         notIndexed: !links.value.find(link => link.url === lowestPriorityRedirectRule?.url)
