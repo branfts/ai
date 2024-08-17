@@ -12,7 +12,7 @@
                 <v-btn ref="tourGitButtonRef" class="text-caption" :href="`${repo}/fork`" target="_blank" rel="noopener" text="update this index" :variant="smAndDown ? 'text' : 'outlined'" size="small" :append-icon="GitHubIcon" />
             </v-card-subtitle>
             <v-card-text>
-                <flip-board ref="flip" class="d-flex justify-center pa-0" title="Redirecting" tooltipLocation="bottom" v-model="timer" :paused="hovered.flipboard || dialog" :timeout="linkRedirectRule.timeout" v-if="linkRedirectRule?.timeout && linkRedirectRule.notIndexed && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                <flip-board ref="flip" class="d-flex justify-center pa-0" title="Redirecting" tooltipLocation="bottom" v-model="timer" :paused="hovered.flipboard || dialog" :timeout="linkRedirectRule.timeout" v-if="!route.query.noredirect && linkRedirectRule?.timeout && linkRedirectRule.notIndexed && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
             </v-card-text>
         </v-card>
         <v-list ref="tourListRef">
@@ -30,7 +30,7 @@
                     <div class="mb-1" v-if="!editing[link.uuid]" :class="smAndDown ? 'text-body-2' : ''">{{ subtitle }}</div>
                 </template>
                 <template v-slot:append>
-                    <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="linkRedirectRule.timeout" v-if="!editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
+                    <flip-board ref="flip" class="pa-0 mr-4" title="Redirecting" v-model="timer" :paused="hovered[i] || dialog" :timeout="linkRedirectRule.timeout" v-if="!route.query.noredirect && !editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)" :class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
                     <flip-board-counter :ref="`flip-clicks-${i}`" class="pa-0 mr-4 animate__animated animate__fadeIn" :tooltip="`${link.clicks?.toLocaleString()} click${link.clicks > 1 ? 's' : ''}`" :modelValue="`${link.clicks}`" v-if="!editing[link.uuid] && link.clicks" />
                     <div v-if="isAuthenticated && !editing[link.uuid]" class="d-flex">
                         <v-btn :text="smAndDown ? undefined : 'edit'" :icon="smAndDown ? 'edit' : undefined" variant="tonal" rounded size="small" @click.prevent="editing[link.uuid] = true" />
@@ -168,7 +168,6 @@ const linkRedirectRule = computed(() => {
         ]
         : rules.value.filter(rule => rule.name === 'redirect' && !rule.referrer)
 
-    console.log(filteredRules)
     // Find the rule with the lowest priority
     const lowestPriorityRedirectRule = filteredRules.reduce((lowest, current) => {
         if (lowest === null || current.priority === lowest.priority) {
