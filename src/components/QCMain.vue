@@ -45,7 +45,7 @@ async function asyncInit() {
     try {
         const userJsModule = `${$getHostForName(username)}/u/${route.params.username}.js`
         const userConfig = username && await import(/* @vite-ignore */userJsModule)
-        const { links, rules } = userConfig
+        const { links, rules, groups, subgroups } = userConfig
 
         const timeBasedRules = rules.filter(rule => rule.name === 'redirect' && rule.startTime && rule.endTime && isRuleActive(rule))
         const alwaysActiveRules = rules.filter(rule => rule.name === 'redirect' && (!rule.startTime || !rule.endTime))
@@ -75,7 +75,7 @@ async function asyncInit() {
             }
         }
 
-        user.value = { username, links, rules, ...user.value }
+        user.value = { username, links, rules, groups, subgroups, ...user.value }
     } catch (error) {
         console.error(error)
     } finally {
