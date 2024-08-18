@@ -12,6 +12,7 @@
     "animate.css": "^4.1.1",
     "async": "^3.2.5",
     "axios": "^1.7.4",
+    "jsqr": "^1.4.0",
     "keycloak-js": "^25.0.2",
     "lru-cache": "^11.0.0",
     "pinia": "^2.2.2",

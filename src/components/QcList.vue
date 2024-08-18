@@ -4,7 +4,7 @@
 			<v-card-title>
 				<div class="d-flex align-center justify-center">
 					<div class="text-h6 text-center pr-2">{{ user?.username }}</div>
-					<v-btn icon="share" ref="tourShareButtonRef" variant="text" size="small" @click="dialog = true" :ripple="false" />
+					<v-btn icon="share" ref="tourShareButtonRef" variant="text" size="small" @click="dialogs.share = true" :ripple="false" />
 				</div>
 			</v-card-title>
 			<v-card-subtitle class="pa-0 mt-n4" :class="smAndDown ? 'text-center' : 'text-end'">
@@ -18,7 +18,7 @@
 					title="Redirecting"
 					tooltipLocation="bottom"
 					v-model="timer"
-					:paused="hovered.flipboard || dialog"
+					:paused="hovered.flipboard || dialogs.share"
 					:timeout="linkRedirectRule.timeout"
 					v-if="!route.query.noredirect && linkRedirectRule?.timeout && linkRedirectRule.notIndexed && (timer === undefined || timer > -1)"
 					:class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
@@ -27,8 +27,10 @@
 		<v-list ref="tourListRef" :opened="opened">
 			<div v-for="(link, i) in filteredLinks" :key="i">
 				<v-list-item v-if="link.group && !groupSubHeaders[`${link.group}`]" type="subheader" :title="groups[link.group].title" class="text-center" :class="{ 'grouped start': link.group }">
-                    <template v-slot:title="title"><span class="text-caption font-weight-light">{{ title.title }}</span></template>
-                </v-list-item>
+					<template v-slot:title="title"
+						><span class="text-caption font-weight-light">{{ title.title }}</span></template
+					>
+				</v-list-item>
 				<v-list-item
 					:id="`u.${user.username} ${link.uuid}`"
 					:href="!editing[link.uuid] ? link.url : undefined"
@@ -39,7 +41,7 @@
 					@focus="hovered[i] = true"
 					@blur="hovered[i] = false"
 					tabindex="0"
-					:class="{ 'pa=0': smAndDown, grouped: link.group, 'end': filteredLinks[i + 1]?.group !== link.group }">
+					:class="{ 'pa=0': smAndDown, grouped: link.group, end: filteredLinks[i + 1]?.group !== link.group }">
 					<template v-slot:prepend>
 						<component v-if="!editing[link.uuid] && link.icon" class="mr-8" :is="link.icon" :style="hovered[i] ? `color: ${typeof link.color === 'function' ? link.color() : link.color}` : 'filter: grayscale(100%)'" />
 						<v-img style="border-radius: 25%" v-else-if="(!editing[link.uuid] && link.favicon) || link.svg" :src="link.favicon || link.svg" class="mr-8" width="24" height="24" />
@@ -58,7 +60,7 @@
 							class="pa-0 mr-4"
 							title="Redirecting"
 							v-model="timer"
-							:paused="hovered[i] || dialog"
+							:paused="hovered[i] || dialogs.share"
 							:timeout="linkRedirectRule.timeout"
 							v-if="!route.query.noredirect && !editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)"
 							:class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
@@ -86,13 +88,14 @@
 					:id="`u.${user.username} ${link.uuid}`"
 					v-for="(link, i) in subgroup.links"
 					:key="i"
-					:href="!editing[link.uuid] ? link.url : undefined"
+					:href="!/cryptocurrency/.test(subgroup.name) && !editing[link.uuid] ? link.url : undefined"
 					:title="link.title || link.url"
 					:subtitle="!editing[link.uuid] ? link.subtitle : undefined"
 					@mouseenter="hovered[i] = true"
 					@mouseleave="hovered[i] = false"
 					@focus="hovered[i] = true"
 					@blur="hovered[i] = false"
+					@click=";/cryptocurrency/.test(subgroup.name) && clickHandler(link)"
 					tabindex="0"
 					:class="smAndDown ? 'pa-0' : ''">
 					<template v-slot:prepend>
@@ -113,7 +116,7 @@
 							class="pa-0 mr-4"
 							title="Redirecting"
 							v-model="timer"
-							:paused="hovered[i] || dialog"
+							:paused="hovered[i] || dialogs.share"
 							:timeout="linkRedirectRule.timeout"
 							v-if="!route.query.noredirect && !editing[link.uuid] && linkRedirectRule?.timeout && linkRedirectRule?.url === link.url && (timer === undefined || timer > -1)"
 							:class="timer < 1 ? 'animate__animated animate__fadeOut' : ''" />
@@ -127,12 +130,12 @@
 				</v-list-item>
 			</v-list-group>
 		</v-list>
-		<v-dialog v-model="dialog" class="d-flex justify-center align-center mx-1" @close="dialog = false" max-width="500" width="100%" eager>
+		<v-dialog v-model="dialogs.share" class="d-flex justify-center align-center mx-1" @close="dialogs.share = false" max-width="500" width="100%" eager>
 			<v-card ref="tourShareQrcodeRef" rounded="xl" class="my-1 pb-3">
 				<v-card-title class="d-flex align-center text-body-1 font-weight-bold"
 					>QR Code
 					<v-spacer />
-					<v-icon icon="close" size="x-small" @click="dialog = false"></v-icon>
+					<v-icon icon="close" size="x-small" @click="dialogs.share = false"></v-icon>
 				</v-card-title>
 				<v-divider />
 				<v-card-text class="py-0">
@@ -181,11 +184,40 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+		<v-dialog v-model="dialogs.cryptocurrency" class="d-flex justify-center align-center mx-1" @close="dialogs.cryptocurrency = false" max-width="500" width="100%" eager>
+			<v-card v-if="activeLink" ref="tourCryptocurrencyRef" rounded="xl" class="my-1 pb-3">
+				<v-card-title class="d-flex align-center text-body-1 font-weight-bold">
+					{{ activeLink.title }}
+					<v-spacer />
+					<v-icon icon="close" size="x-small" @click="dialogs.cryptocurrency = false"></v-icon>
+				</v-card-title>
+				<v-divider />
+				<v-card-text class="d-flex flex-column align-center">
+					<v-img width="300" :src="activeLink.url"></v-img>
+					<v-chip class="mt-2" color="primary" @click="copyHandler('walletAddress', activeLink.decoded.data)" v-if="activeLink.decoded?.data"
+						><div class="text-truncate text-no-wrap text-caption">{{ activeLink.decoded.data }}</div>
+						<v-tooltip v-model="tooltips['walletAddress']" class="justify-center align-center" attach location="top" style="opacity: 0.8">
+							<span class="text-caption font-weight-bold">Copied</span>
+						</v-tooltip>
+					</v-chip>
+				</v-card-text>
+				<v-divider />
+				<v-card-actions>
+					<v-btn variant="outlined" rounded size="small" @click="downloadHandler">download image</v-btn>
+					<v-btn variant="tonal" rounded size="small" class="mr-4" @click="copyHandler('qrcode')"
+						>copy image
+						<v-tooltip v-model="tooltips['qrcode']" class="justify-center align-center" attach location="top">
+							<span class="text-caption font-weight-bold">Copied</span>
+						</v-tooltip>
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-container>
 </template>
 <style scoped>
 .grouped {
-	background-color: #FAFAFA;
+	background-color: #fafafa;
 }
 .grouped.start {
 	border-radius: 15px 15px 0 0 !important;
@@ -203,6 +235,7 @@
 <script setup>
 import 'animate.css'
 import QRCode from 'qrcode'
+import jsQR from 'jsqr'
 import { ref, computed, inject, onMounted, watch, getCurrentInstance, nextTick } from 'vue'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 import { GitHubIcon } from 'vue3-simple-icons'
@@ -216,6 +249,7 @@ import FlipBoardCounter from '@/components/FlipBoardCounter.vue'
 import LinkField from './LinkField.vue'
 import { tourInit } from '@/utils/tour.utils.js'
 
+const activeLink = ref()
 const route = useRoute()
 const tour = ref()
 const tourButtonRef = ref()
@@ -245,7 +279,6 @@ const hex = computed(() =>
 		.map(x => x.charCodeAt(0).toString(16))
 		.join('')
 )
-const dialog = ref(false)
 const { smAndDown } = useDisplay()
 const store = useAppStore()
 const props = defineProps({
@@ -256,6 +289,7 @@ const tooltips = ref({
 	hex: false,
 	qrcode: false,
 	link: false,
+	walletAddress: false,
 })
 const links = computed(() => props.user?.links)
 const rules = computed(() => props.user?.rules)
@@ -289,7 +323,10 @@ const linkRedirectRule = computed(() => {
 		notIndexed: !links.value.find(link => link.url === lowestPriorityRedirectRule?.url),
 	}
 })
-
+const dialogs = ref({
+	share: false,
+	cryptocurrency: false,
+})
 const hovered = ref(links.value?.reduce((acc, cur, i) => ({ ...acc, [i]: false }), { flipboard: false }) || { flipboard: false })
 const socialLinks = computed(() =>
 	parseSocialLinks(links.value)
@@ -312,8 +349,8 @@ const filteredLinks = computed(() => socialLinks.value.filter(link => !link.subg
 const subgroups = computed(() =>
 	props.user?.subgroups?.map(subgroup => {
 		if (!opened.value.includes(subgroup.name) && (subgroup.open || subgroup.open === undefined)) {
-            opened.value = [...opened.value, subgroup.name]
-        }
+			opened.value = [...opened.value, subgroup.name]
+		}
 		editing.value[`subgroup-${subgroup.name}`] = false
 		return {
 			...subgroup,
@@ -347,7 +384,7 @@ function copyDataUrlToClipboard(dataUrl) {
 	clipboard.copy(new Blob([ab], { type: mimeString }))
 }
 
-function copyHandler(name) {
+function copyHandler(name, value) {
 	tooltips.value[name] = true
 	if (name === 'qrcode') {
 		copyDataUrlToClipboard(qrcode.value)
@@ -355,6 +392,10 @@ function copyHandler(name) {
 		clipboard.copy(hex.value)
 	} else if (name === 'link') {
 		clipboard.copy(qcLink.value)
+	} else if (value) {
+        tooltips.value[name] = true
+		clipboard.copy(value)
+        setTimeout(() => (tooltips.value[name] = false), 1500)
 	}
 	setTimeout(() => (tooltips.value[name] = false), 1500)
 	gtag('event', 'link_copy', { method: name })
@@ -382,10 +423,42 @@ function startTour() {
 	tour.value.start()
 	gtag('event', 'qc_tour_start')
 }
+function clickHandler(link) {
+	activeLink.value = link
+	if (/cryptocurrency/.test(link.subgroup)) {
+		loadImageData(link.url).then(({ data, width, height }) => {
+			activeLink.value.decoded = jsQR(data, width, height)
+		})
+		dialogs.value.cryptocurrency = true
+	}
+}
+async function loadImageData(url) {
+	return new Promise((resolve, reject) => {
+		const image = new Image()
+		image.crossOrigin = 'Anonymous' // Handle cross-origin issues
 
+		image.onload = function () {
+			const canvas = document.createElement('canvas')
+			canvas.width = image.width
+			canvas.height = image.height
+
+			const context = canvas.getContext('2d')
+			context.drawImage(image, 0, 0)
+
+			const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+			resolve({ data: imageData.data, width: canvas.width, height: canvas.height }) // Uint8ClampedArray
+		}
+
+		image.onerror = function (err) {
+			reject(err)
+		}
+
+		image.src = url
+	})
+}
 asyncInit()
 onMounted(() => {
-	tour.value = tourInit(refs, smAndDown, offset, dialog, (!store.tour.completed && !store.tour.canceled) || (!store.tour.completed && !store.tour.canceled && route.query.tour))
+	tour.value = tourInit(refs, smAndDown, offset, dialogs.value.share, (!store.tour.completed && !store.tour.canceled) || (!store.tour.completed && !store.tour.canceled && route.query.tour))
 	tour.value
 		.on('complete', () => {
 			store.tour.completed = Date.now()
@@ -395,7 +468,7 @@ onMounted(() => {
 			store.tour.canceled = Date.now()
 			gtag('event', 'qc_tour_canceled')
 		})
-	watch(dialog, dialog => {
+	watch(dialogs.value.share, dialog => {
 		if (!dialog) return
 		if (!qrcode.value) {
 			asyncInit()
